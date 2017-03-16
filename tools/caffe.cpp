@@ -86,7 +86,6 @@ static void get_gpus(vector<int>* gpus) {
 #ifndef CPU_ONLY
     CUDA_CHECK(cudaGetDeviceCount(&count));
 #else
-    NO_GPU;
 #endif
     for (int i = 0; i < count; ++i) {
       gpus->push_back(i);

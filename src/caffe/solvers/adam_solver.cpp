@@ -79,7 +79,6 @@ void AdamSolver<Dtype>::ComputeUpdateValue(int param_id, Dtype rate) {
         val_m->mutable_gpu_data(), val_v->mutable_gpu_data(), beta1, beta2,
         eps_hat, local_rate*correction);
 #else
-    NO_GPU;
 #endif
     break;
   }

@@ -56,7 +56,6 @@ void RMSPropSolver<Dtype>::ComputeUpdateValue(int param_id, Dtype rate) {
         this->history_[param_id]->mutable_gpu_data(),
         rms_decay, delta, local_rate);
 #else
-    NO_GPU;
 #endif
     break;
   default:

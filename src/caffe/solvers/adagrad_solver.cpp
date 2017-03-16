@@ -54,7 +54,6 @@ void AdaGradSolver<Dtype>::ComputeUpdateValue(int param_id, Dtype rate) {
         net_params[param_id]->mutable_gpu_diff(),
         this->history_[param_id]->mutable_gpu_data(), delta, local_rate);
 #else
-    NO_GPU;
 #endif
     break;
   }

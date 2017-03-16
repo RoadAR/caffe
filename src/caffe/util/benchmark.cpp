@@ -18,7 +18,6 @@ Timer::~Timer() {
     CUDA_CHECK(cudaEventDestroy(start_gpu_));
     CUDA_CHECK(cudaEventDestroy(stop_gpu_));
 #else
-    NO_GPU;
 #endif
   }
 }
@@ -29,7 +28,6 @@ void Timer::Start() {
 #ifndef CPU_ONLY
       CUDA_CHECK(cudaEventRecord(start_gpu_, 0));
 #else
-      NO_GPU;
 #endif
     } else {
       start_cpu_ = boost::posix_time::microsec_clock::local_time();
@@ -45,7 +43,6 @@ void Timer::Stop() {
 #ifndef CPU_ONLY
       CUDA_CHECK(cudaEventRecord(stop_gpu_, 0));
 #else
-      NO_GPU;
 #endif
     } else {
       stop_cpu_ = boost::posix_time::microsec_clock::local_time();
@@ -70,7 +67,6 @@ float Timer::MicroSeconds() {
     // Cuda only measure milliseconds
     elapsed_microseconds_ = elapsed_milliseconds_ * 1000;
 #else
-      NO_GPU;
 #endif
   } else {
     elapsed_microseconds_ = (stop_cpu_ - start_cpu_).total_microseconds();
@@ -91,7 +87,6 @@ float Timer::MilliSeconds() {
     CUDA_CHECK(cudaEventElapsedTime(&elapsed_milliseconds_, start_gpu_,
                                     stop_gpu_));
 #else
-      NO_GPU;
 #endif
   } else {
     elapsed_milliseconds_ = (stop_cpu_ - start_cpu_).total_milliseconds();
@@ -110,7 +105,6 @@ void Timer::Init() {
       CUDA_CHECK(cudaEventCreate(&start_gpu_));
       CUDA_CHECK(cudaEventCreate(&stop_gpu_));
 #else
-      NO_GPU;
 #endif
     }
     initted_ = true;

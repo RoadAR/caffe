@@ -61,20 +61,16 @@ void Caffe::set_random_seed(const unsigned int seed) {
 }
 
 void Caffe::SetDevice(const int device_id) {
-  NO_GPU;
 }
 
 void Caffe::DeviceQuery() {
-  NO_GPU;
 }
 
 bool Caffe::CheckDevice(const int device_id) {
-  NO_GPU;
   return false;
 }
 
 int Caffe::FindDevice(const int start_id) {
-  NO_GPU;
   return -1;
 }
 

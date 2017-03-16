@@ -124,7 +124,6 @@ void SGDSolver<Dtype>::Normalize(int param_id) {
     caffe_gpu_scal(net_params[param_id]->count(), accum_normalization,
         net_params[param_id]->mutable_gpu_diff());
 #else
-    NO_GPU;
 #endif
     break;
   }
@@ -186,7 +185,6 @@ void SGDSolver<Dtype>::Regularize(int param_id) {
       }
     }
 #else
-    NO_GPU;
 #endif
     break;
   }
@@ -225,7 +223,6 @@ void SGDSolver<Dtype>::ComputeUpdateValue(int param_id, Dtype rate) {
         history_[param_id]->mutable_gpu_data(),
         momentum, local_rate);
 #else
-    NO_GPU;
 #endif
     break;
   }

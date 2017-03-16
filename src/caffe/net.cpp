@@ -775,7 +775,6 @@ void Net<Dtype>::ClearParamDiffs() {
       caffe_gpu_set(blob->count(), static_cast<Dtype>(0),
                     blob->mutable_gpu_diff());
 #else
-      NO_GPU;
 #endif
       break;
     }

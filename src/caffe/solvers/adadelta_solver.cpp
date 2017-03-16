@@ -97,7 +97,6 @@ void AdaDeltaSolver<Dtype>::ComputeUpdateValue(int param_id, Dtype rate) {
         this->history_[update_history_offset + param_id]->mutable_gpu_data(),
         momentum, delta, local_rate);
 #else
-    NO_GPU;
 #endif
     break;
   }

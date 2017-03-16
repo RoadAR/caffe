@@ -175,7 +175,6 @@ inline void caffe_gpu_memset(const size_t N, const int alpha, void* X) {
 #ifndef CPU_ONLY
   CUDA_CHECK(cudaMemset(X, alpha, N));  // NOLINT(caffe/alt_fn)
 #else
-  NO_GPU;
 #endif
 }
 
