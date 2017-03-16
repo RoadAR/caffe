@@ -43,7 +43,6 @@ Dtype SGDSolver<Dtype>::GetLearningRate() {
     if (this->current_step_ < this->param_.stepvalue_size() &&
           this->iter_ >= this->param_.stepvalue(this->current_step_)) {
       this->current_step_++;
-      this->iter_ << ", step = " << this->current_step_;
     }
     rate = this->param_.base_lr() *
         pow(this->param_.gamma(), this->current_step_);

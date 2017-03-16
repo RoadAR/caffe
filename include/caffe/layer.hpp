@@ -438,7 +438,7 @@ inline Dtype Layer<Dtype>::Forward(const vector<Blob<Dtype>*>& bottom,
 #endif
     break;
   default:
-    //LOG(FATAL) << "Unknown caffe mode.";
+    ;;
   }
   return loss;
 }
@@ -455,7 +455,7 @@ inline void Layer<Dtype>::Backward(const vector<Blob<Dtype>*>& top,
     Backward_gpu(top, propagate_down, bottom);
     break;
   default:
-    //LOG(FATAL) << "Unknown caffe mode.";
+    ;;
   }
 }
 

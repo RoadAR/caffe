@@ -1063,7 +1063,7 @@ bool UpgradeSolverType(SolverParameter* solver_param) {
       type = "Adam";
       break;
     default:
-      //LOG(FATAL) << "Unknown SolverParameter solver_type: " << type;
+      ;;
     }
     solver_param->set_type(type);
     solver_param->clear_solver_type();
@@ -1079,17 +1079,8 @@ bool UpgradeSolverAsNeeded(const string& param_file, SolverParameter* param) {
   bool success = true;
   // Try to upgrade old style solver_type enum fields into new string type
   if (SolverNeedsTypeUpgrade(*param)) {
-    //LOG(INFO) << "Attempting to upgrade input file specified using deprecated "
-    //          << "'solver_type' field (enum)': " << param_file;
     if (!UpgradeSolverType(param)) {
       success = false;
-      //LOG(ERROR) << "Warning: had one or more problems upgrading "
-      //           << "SolverType (see above).";
-    } else {
-      //LOG(INFO) << "Successfully upgraded file specified using deprecated "
-      //          << "'solver_type' field (enum) to 'type' field (string).";
-      //LOG(WARNING) << "Note that future Caffe releases will only support "
-      //             << "'type' field (string) for a solver's type.";
     }
   }
   return success;

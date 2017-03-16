@@ -213,9 +213,6 @@ void Solver<Dtype>::Step(int iters) {
     if (display) {
       float lapse = iteration_timer_.Seconds();
       float per_s = (iter_ - iterations_last_) / (lapse ? lapse : 1);
-      //LOG_IF(INFO, Caffe::root_solver()) << "Iteration " << iter_
-      //    << " (" << per_s << " iter/s, " << lapse << "s/"
-      //    << param_.display() << " iters), loss = " << smoothed_loss_;
       iteration_timer_.Start();
       iterations_last_ = iter_;
       const vector<Blob<Dtype>*>& result = net_->output_blobs();
@@ -397,6 +394,7 @@ void Solver<Dtype>::Snapshot() {
     model_filename = SnapshotToHDF5();
     break;
   default:
+    ;;
   }
 
   SnapshotSolverState(model_filename);

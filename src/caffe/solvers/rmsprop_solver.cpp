@@ -59,6 +59,7 @@ void RMSPropSolver<Dtype>::ComputeUpdateValue(int param_id, Dtype rate) {
 #endif
     break;
   default:
+    ;;
   }
 }
 

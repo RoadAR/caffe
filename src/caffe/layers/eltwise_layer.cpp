@@ -92,6 +92,7 @@ void EltwiseLayer<Dtype>::Forward_cpu(
     }
     break;
   default:
+    ;;
   }
 }
 
@@ -143,6 +144,7 @@ void EltwiseLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
         }
         break;
       default:
+        ;;
       }
     }
   }
