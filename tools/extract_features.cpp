@@ -32,34 +32,20 @@ int feature_extraction_pipeline(int argc, char** argv) {
   ::google::InitGoogleLogging(argv[0]);
   const int num_required_args = 7;
   if (argc < num_required_args) {
-    LOG(ERROR)<<
-    "This program takes in a trained network and an input data layer, and then"
-    " extract features of the input data produced by the net.\n"
-    "Usage: extract_features  pretrained_net_param"
-    "  feature_extraction_proto_file  extract_feature_blob_name1[,name2,...]"
-    "  save_feature_dataset_name1[,name2,...]  num_mini_batches  db_type"
-    "  [CPU/GPU] [DEVICE_ID=0]\n"
-    "Note: you can extract multiple features in one pass by specifying"
-    " multiple feature blob names and dataset names separated by ','."
-    " The names cannot contain white space characters and the number of blobs"
-    " and datasets must be equal.";
     return 1;
   }
   int arg_pos = num_required_args;
 
   arg_pos = num_required_args;
   if (argc > arg_pos && strcmp(argv[arg_pos], "GPU") == 0) {
-    LOG(ERROR)<< "Using GPU";
     int device_id = 0;
     if (argc > arg_pos + 1) {
       device_id = atoi(argv[arg_pos + 1]);
       CHECK_GE(device_id, 0);
     }
-    LOG(ERROR) << "Using Device_id=" << device_id;
     Caffe::SetDevice(device_id);
     Caffe::set_mode(Caffe::GPU);
   } else {
-    LOG(ERROR) << "Using CPU";
     Caffe::set_mode(Caffe::CPU);
   }
 
@@ -122,15 +108,12 @@ int feature_extraction_pipeline(int argc, char** argv) {
   std::vector<boost::shared_ptr<db::Transaction> > txns;
   const char* db_type = argv[++arg_pos];
   for (size_t i = 0; i < num_features; ++i) {
-    LOG(INFO)<< "Opening dataset " << dataset_names[i];
     boost::shared_ptr<db::DB> db(db::GetDB(db_type));
     db->Open(dataset_names.at(i), db::NEW);
     feature_dbs.push_back(db);
     boost::shared_ptr<db::Transaction> txn(db->NewTransaction());
     txns.push_back(txn);
   }
-
-  LOG(ERROR)<< "Extracting Features";
 
   Datum datum;
   std::vector<int> image_indices(num_features, 0);
@@ -162,8 +145,6 @@ int feature_extraction_pipeline(int argc, char** argv) {
         if (image_indices[i] % 1000 == 0) {
           txns.at(i)->Commit();
           txns.at(i).reset(feature_dbs.at(i)->NewTransaction());
-          LOG(ERROR)<< "Extracted features of " << image_indices[i] <<
-              " query images for feature blob " << blob_names[i];
         }
       }  // for (int n = 0; n < batch_size; ++n)
     }  // for (int i = 0; i < num_features; ++i)
@@ -173,11 +154,8 @@ int feature_extraction_pipeline(int argc, char** argv) {
     if (image_indices[i] % 1000 != 0) {
       txns.at(i)->Commit();
     }
-    LOG(ERROR)<< "Extracted features of " << image_indices[i] <<
-        " query images for feature blob " << blob_names[i];
     feature_dbs.at(i)->Close();
   }
 
-  LOG(ERROR)<< "Successfully extracted the features!";
   return 0;
 }

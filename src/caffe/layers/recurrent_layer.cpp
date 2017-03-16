@@ -17,8 +17,6 @@ void RecurrentLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       << "bottom[0] must have at least 2 axes -- (#timesteps, #streams, ...)";
   T_ = bottom[0]->shape(0);
   N_ = bottom[0]->shape(1);
-  LOG(INFO) << "Initializing recurrent layer: assuming input batch contains "
-            << T_ << " timesteps of " << N_ << " independent streams.";
 
   CHECK_EQ(bottom[1]->num_axes(), 2)
       << "bottom[1] must have exactly 2 axes -- (#timesteps, #streams)";
@@ -147,8 +145,6 @@ void RecurrentLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   this->blobs_.clear();
   for (int i = 0; i < unrolled_net_->params().size(); ++i) {
     if (unrolled_net_->param_owners()[i] == -1) {
-      LOG(INFO) << "Adding parameter " << i << ": "
-                << unrolled_net_->param_display_names()[i];
       this->blobs_.push_back(unrolled_net_->params()[i]);
     }
   }

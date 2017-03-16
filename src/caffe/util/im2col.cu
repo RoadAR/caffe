@@ -225,8 +225,8 @@ void im2col_nd_gpu(const Dtype* data_im, const int num_spatial_axes,
         kernel_shape, pad, stride, dilation, data_col);
     break;
   default:
-    LOG(FATAL) << "im2col_nd_gpu does not support computation with "
-               << num_spatial_axes << " spatial axes";
+    //LOG(FATAL) << "im2col_nd_gpu does not support computation with "
+    //           << num_spatial_axes << " spatial axes";
   }
   CUDA_POST_KERNEL_CHECK;
 }
@@ -491,8 +491,8 @@ void col2im_nd_gpu(const Dtype* data_col, const int num_spatial_axes,
           kernel_shape, pad, stride, dilation, data_im);
     break;
   default:
-    LOG(FATAL) << "col2im_nd_gpu does not support computation with "
-               << num_spatial_axes << " spatial axes";
+    //LOG(FATAL) << "col2im_nd_gpu does not support computation with "
+    //           << num_spatial_axes << " spatial axes";
   }
   CUDA_POST_KERNEL_CHECK;
 }

@@ -42,10 +42,10 @@ void DataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
   for (int i = 0; i < this->prefetch_.size(); ++i) {
     this->prefetch_[i]->data_.Reshape(top_shape);
   }
-  LOG_IF(INFO, Caffe::root_solver())
-      << "output data size: " << top[0]->num() << ","
-      << top[0]->channels() << "," << top[0]->height() << ","
-      << top[0]->width();
+  //LOG_IF(INFO, Caffe::root_solver())
+  //    << "output data size: " << top[0]->num() << ","
+  //    << top[0]->channels() << "," << top[0]->height() << ","
+  //    << top[0]->width();
   // label
   if (this->output_labels_) {
     vector<int> label_shape(1, batch_size);
@@ -70,8 +70,8 @@ template<typename Dtype>
 void DataLayer<Dtype>::Next() {
   cursor_->Next();
   if (!cursor_->valid()) {
-    LOG_IF(INFO, Caffe::root_solver())
-        << "Restarting data prefetching from start.";
+    //LOG_IF(INFO, Caffe::root_solver())
+    //    << "Restarting data prefetching from start.";
     cursor_->SeekToFirst();
   }
   offset_++;
@@ -125,9 +125,6 @@ void DataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
   }
   timer.Stop();
   batch_timer.Stop();
-  DLOG(INFO) << "Prefetch batch: " << batch_timer.MilliSeconds() << " ms.";
-  DLOG(INFO) << "     Read time: " << read_time / 1000 << " ms.";
-  DLOG(INFO) << "Transform time: " << trans_time / 1000 << " ms.";
 }
 
 INSTANTIATE_CLASS(DataLayer);

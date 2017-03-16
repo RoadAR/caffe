@@ -2513,8 +2513,6 @@ TYPED_TEST(NetTest, TestForcePropagateDown) {
       EXPECT_TRUE(need_backward[0]);   // innerproduct
       EXPECT_FALSE(need_backward[1]);  // label
       EXPECT_TRUE(layer_need_backward[layer_id]);
-    } else {
-      LOG(FATAL) << "Unknown layer: " << layer_name;
     }
   }
   this->InitForcePropNet(true);
@@ -2535,8 +2533,6 @@ TYPED_TEST(NetTest, TestForcePropagateDown) {
       EXPECT_TRUE(need_backward[0]);   // innerproduct
       EXPECT_FALSE(need_backward[1]);  // label
       EXPECT_TRUE(layer_need_backward[layer_id]);
-    } else {
-      LOG(FATAL) << "Unknown layer: " << layer_name;
     }
   }
 }

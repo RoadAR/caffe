@@ -63,7 +63,6 @@ void LRNLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     WithinChannelForward(bottom, top);
     break;
   default:
-    LOG(FATAL) << "Unknown normalization region.";
   }
 }
 
@@ -114,7 +113,6 @@ void LRNLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     WithinChannelBackward(top, propagate_down, bottom);
     break;
   default:
-    LOG(FATAL) << "Unknown normalization region.";
   }
 }
 

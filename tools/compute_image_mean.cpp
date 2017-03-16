@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
   datum.ParseFromString(cursor->value());
 
   if (DecodeDatumNative(&datum)) {
-    LOG(INFO) << "Decoding Datum";
+      ;;
   }
 
   sum_blob.set_num(1);
@@ -65,7 +65,6 @@ int main(int argc, char** argv) {
   for (int i = 0; i < size_in_datum; ++i) {
     sum_blob.add_data(0.);
   }
-  LOG(INFO) << "Starting Iteration";
   while (cursor->valid()) {
     Datum datum;
     datum.ParseFromString(cursor->value());
@@ -90,34 +89,30 @@ int main(int argc, char** argv) {
     }
     ++count;
     if (count % 10000 == 0) {
-      LOG(INFO) << "Processed " << count << " files.";
+        ;;
     }
     cursor->Next();
   }
 
   if (count % 10000 != 0) {
-    LOG(INFO) << "Processed " << count << " files.";
+      ;;
   }
   for (int i = 0; i < sum_blob.data_size(); ++i) {
     sum_blob.set_data(i, sum_blob.data(i) / count);
   }
   // Write to disk
   if (argc == 3) {
-    LOG(INFO) << "Write to " << argv[2];
     WriteProtoToBinaryFile(sum_blob, argv[2]);
   }
   const int channels = sum_blob.channels();
   const int dim = sum_blob.height() * sum_blob.width();
   std::vector<float> mean_values(channels, 0.0);
-  LOG(INFO) << "Number of channels: " << channels;
   for (int c = 0; c < channels; ++c) {
     for (int i = 0; i < dim; ++i) {
       mean_values[c] += sum_blob.data(dim * c + i);
     }
-    LOG(INFO) << "mean_value channel [" << c << "]:" << mean_values[c] / dim;
   }
 #else
-  LOG(FATAL) << "This tool requires OpenCV; compile with USE_OPENCV.";
 #endif  // USE_OPENCV
   return 0;
 }

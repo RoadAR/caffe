@@ -51,19 +51,6 @@ const int NPY_DTYPE = NPY_FLOAT32;
 void set_mode_cpu() { Caffe::set_mode(Caffe::CPU); }
 void set_mode_gpu() { Caffe::set_mode(Caffe::GPU); }
 
-void InitLog(int level) {
-  FLAGS_logtostderr = 1;
-  FLAGS_minloglevel = level;
-  ::google::InitGoogleLogging("");
-  ::google::InstallFailureSignalHandler();
-}
-void InitLogInfo() {
-  InitLog(google::INFO);
-}
-void Log(const string& s) {
-  LOG(INFO) << s;
-}
-
 void set_random_seed(unsigned int seed) { Caffe::set_random_seed(seed); }
 
 // For convenience, check that input files can be opened, and raise an

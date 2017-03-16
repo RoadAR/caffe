@@ -92,7 +92,6 @@ void EltwiseLayer<Dtype>::Forward_cpu(
     }
     break;
   default:
-    LOG(FATAL) << "Unknown elementwise operation.";
   }
 }
 
@@ -144,7 +143,6 @@ void EltwiseLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
         }
         break;
       default:
-        LOG(FATAL) << "Unknown elementwise operation.";
       }
     }
   }

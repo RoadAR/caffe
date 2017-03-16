@@ -73,9 +73,6 @@ class LayerRegistry {
 
   // Get a layer using a LayerParameter.
   static shared_ptr<Layer<Dtype> > CreateLayer(const LayerParameter& param) {
-    if (Caffe::root_solver()) {
-      LOG(INFO) << "Creating layer " << param.name();
-    }
     const string& type = param.type();
     CreatorRegistry& registry = Registry();
     CHECK_EQ(registry.count(type), 1) << "Unknown layer type: " << type
@@ -118,7 +115,6 @@ class LayerRegisterer {
  public:
   LayerRegisterer(const string& type,
                   shared_ptr<Layer<Dtype> > (*creator)(const LayerParameter&)) {
-    // LOG(INFO) << "Registering layer type: " << type;
     LayerRegistry<Dtype>::AddCreator(type, creator);
   }
 };

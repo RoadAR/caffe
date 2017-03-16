@@ -22,7 +22,7 @@ class PythonLayer : public Layer<Dtype> {
     // Details: https://github.com/BVLC/caffe/issues/2936
     if (this->phase_ == TRAIN && Caffe::solver_count() > 1
         && !Caffe::multiprocess()) {
-      LOG(FATAL) << "PythonLayer does not support CLI Multi-GPU, use train.py";
+      //LOG(FATAL) << "PythonLayer does not support CLI Multi-GPU, use train.py";
     }
     self_.attr("param_str") = bp::str(
         this->layer_param_.python_param().param_str());

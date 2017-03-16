@@ -63,7 +63,7 @@ class GradientBasedSolverTest : public MultiDeviceTest<TypeParam> {
         param.set_solver_mode(SolverParameter_SolverMode_GPU);
         break;
       default:
-        LOG(FATAL) << "Unknown Caffe mode: " << Caffe::mode();
+        ;;
     }
     InitSolver(param);
     delta_ = param.delta();
@@ -195,7 +195,6 @@ class GradientBasedSolverTest : public MultiDeviceTest<TypeParam> {
     if (devices == 1) {
       this->solver_->Solve();
     } else {
-      LOG(INFO) << "Multi-GPU test on " << devices << " devices";
       vector<int> gpus;
       // put current device at the beginning
       int device_id = solver_->param().device_id();
@@ -336,8 +335,6 @@ class GradientBasedSolverTest : public MultiDeviceTest<TypeParam> {
             std::sqrt(Dtype(1) - pow(momentum2, num_iters)) /
             (Dtype(1.) - pow(momentum, num_iters));
         update_value = alpha_t * val_m / (std::sqrt(val_v) + delta_);
-      } else {
-        LOG(FATAL) << "Unknown solver type: " << solver_->type();
       }
       if (i == D) {
         updated_bias.mutable_cpu_diff()[0] = update_value;

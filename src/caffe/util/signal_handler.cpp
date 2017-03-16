@@ -24,7 +24,7 @@ namespace {
 
   void HookupHandler() {
     if (already_hooked_up) {
-      LOG(FATAL) << "Tried to hookup signal handlers more than once.";
+      //LOG(FATAL) << "Tried to hookup signal handlers more than once.";
     }
     already_hooked_up = true;
 
@@ -37,10 +37,10 @@ namespace {
     sigfillset(&sa.sa_mask);
     // Intercept SIGHUP and SIGINT
     if (sigaction(SIGHUP, &sa, NULL) == -1) {
-      LOG(FATAL) << "Cannot install SIGHUP handler.";
+      //LOG(FATAL) << "Cannot install SIGHUP handler.";
     }
     if (sigaction(SIGINT, &sa, NULL) == -1) {
-      LOG(FATAL) << "Cannot install SIGINT handler.";
+      //LOG(FATAL) << "Cannot install SIGINT handler.";
     }
   }
 
@@ -56,10 +56,10 @@ namespace {
       sigfillset(&sa.sa_mask);
       // Intercept SIGHUP and SIGINT
       if (sigaction(SIGHUP, &sa, NULL) == -1) {
-        LOG(FATAL) << "Cannot uninstall SIGHUP handler.";
+        //LOG(FATAL) << "Cannot uninstall SIGHUP handler.";
       }
       if (sigaction(SIGINT, &sa, NULL) == -1) {
-        LOG(FATAL) << "Cannot uninstall SIGINT handler.";
+        //LOG(FATAL) << "Cannot uninstall SIGINT handler.";
       }
 
       already_hooked_up = false;

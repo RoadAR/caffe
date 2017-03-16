@@ -110,7 +110,7 @@ void LRNLayerTest<TypeParam>::ReferenceLRNForward(
     }
     break;
   default:
-    LOG(FATAL) << "Unknown normalization region.";
+    ;;
   }
 }
 
@@ -338,7 +338,7 @@ void CuDNNLRNLayerTest<TypeParam>::ReferenceLRNForward(
     }
     break;
   default:
-    LOG(FATAL) << "Unknown normalization region.";
+    ;;
   }
 }
 

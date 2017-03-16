@@ -83,13 +83,8 @@ int main(int argc, char** argv) {
   }
   if (FLAGS_shuffle) {
     // randomly shuffle data
-    LOG(INFO) << "Shuffling data";
     shuffle(lines.begin(), lines.end());
   }
-  LOG(INFO) << "A total of " << lines.size() << " images.";
-
-  if (encode_type.size() && !encoded)
-    LOG(INFO) << "encode_type specified, assuming encoded=true.";
 
   int resize_height = std::max<int>(0, FLAGS_resize_height);
   int resize_width = std::max<int>(0, FLAGS_resize_width);
@@ -113,8 +108,6 @@ int main(int argc, char** argv) {
       // Guess the encoding type from the file name
       string fn = lines[line_id].first;
       size_t p = fn.rfind('.');
-      if ( p == fn.npos )
-        LOG(WARNING) << "Failed to guess the encoding of '" << fn << "'";
       enc = fn.substr(p);
       std::transform(enc.begin(), enc.end(), enc.begin(), ::tolower);
     }
@@ -144,16 +137,13 @@ int main(int argc, char** argv) {
       // Commit db
       txn->Commit();
       txn.reset(db->NewTransaction());
-      LOG(INFO) << "Processed " << count << " files.";
     }
   }
   // write the last batch
   if (count % 1000 != 0) {
     txn->Commit();
-    LOG(INFO) << "Processed " << count << " files.";
   }
 #else
-  LOG(FATAL) << "This tool requires OpenCV; compile with USE_OPENCV.";
 #endif  // USE_OPENCV
   return 0;
 }

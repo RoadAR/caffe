@@ -43,7 +43,6 @@ Dtype SGDSolver<Dtype>::GetLearningRate() {
     if (this->current_step_ < this->param_.stepvalue_size() &&
           this->iter_ >= this->param_.stepvalue(this->current_step_)) {
       this->current_step_++;
-      LOG(INFO) << "MultiStep Status: Iteration " <<
       this->iter_ << ", step = " << this->current_step_;
     }
     rate = this->param_.base_lr() *
@@ -57,7 +56,7 @@ Dtype SGDSolver<Dtype>::GetLearningRate() {
         (Dtype(1.) + exp(-this->param_.gamma() * (Dtype(this->iter_) -
           Dtype(this->param_.stepsize())))));
   } else {
-    LOG(FATAL) << "Unknown learning rate policy: " << lr_policy;
+    ;;
   }
   return rate;
 }
@@ -89,9 +88,6 @@ void SGDSolver<Dtype>::ClipGradients() {
   const Dtype l2norm_diff = std::sqrt(sumsq_diff);
   if (l2norm_diff > clip_gradients) {
     Dtype scale_factor = clip_gradients / l2norm_diff;
-    LOG(INFO) << "Gradient clipping: scaling down gradients (L2 norm "
-        << l2norm_diff << " > " << clip_gradients << ") "
-        << "by scale factor " << scale_factor;
     for (int i = 0; i < net_params.size(); ++i) {
       net_params[i]->scale_diff(scale_factor);
     }
@@ -101,10 +97,6 @@ void SGDSolver<Dtype>::ClipGradients() {
 template <typename Dtype>
 void SGDSolver<Dtype>::ApplyUpdate() {
   Dtype rate = GetLearningRate();
-  if (this->param_.display() && this->iter_ % this->param_.display() == 0) {
-    LOG_IF(INFO, Caffe::root_solver()) << "Iteration " << this->iter_
-        << ", lr = " << rate;
-  }
   ClipGradients();
   for (int param_id = 0; param_id < this->net_->learnable_params().size();
        ++param_id) {
@@ -137,7 +129,7 @@ void SGDSolver<Dtype>::Normalize(int param_id) {
     break;
   }
   default:
-    LOG(FATAL) << "Unknown caffe mode: " << Caffe::mode();
+    ;;
   }
 }
 
@@ -167,7 +159,7 @@ void SGDSolver<Dtype>::Regularize(int param_id) {
             temp_[param_id]->cpu_data(),
             net_params[param_id]->mutable_cpu_diff());
       } else {
-        LOG(FATAL) << "Unknown regularization type: " << regularization_type;
+        ;;
       }
     }
     break;
@@ -190,7 +182,7 @@ void SGDSolver<Dtype>::Regularize(int param_id) {
             temp_[param_id]->gpu_data(),
             net_params[param_id]->mutable_gpu_diff());
       } else {
-        LOG(FATAL) << "Unknown regularization type: " << regularization_type;
+        ;;
       }
     }
 #else
@@ -199,7 +191,7 @@ void SGDSolver<Dtype>::Regularize(int param_id) {
     break;
   }
   default:
-    LOG(FATAL) << "Unknown caffe mode: " << Caffe::mode();
+    ;;
   }
 }
 
@@ -238,7 +230,7 @@ void SGDSolver<Dtype>::ComputeUpdateValue(int param_id, Dtype rate) {
     break;
   }
   default:
-    LOG(FATAL) << "Unknown caffe mode: " << Caffe::mode();
+    ;;
   }
 }
 
@@ -252,7 +244,7 @@ void SGDSolver<Dtype>::SnapshotSolverState(const string& model_filename) {
       SnapshotSolverStateToHDF5(model_filename);
       break;
     default:
-      LOG(FATAL) << "Unsupported snapshot format.";
+      ;;
   }
 }
 
@@ -270,8 +262,6 @@ void SGDSolver<Dtype>::SnapshotSolverStateToBinaryProto(
     history_[i]->ToProto(history_blob);
   }
   string snapshot_filename = Solver<Dtype>::SnapshotFilename(".solverstate");
-  LOG(INFO)
-    << "Snapshotting solver state to binary proto file " << snapshot_filename;
   WriteProtoToBinaryFile(state, snapshot_filename.c_str());
 }
 
@@ -280,7 +270,6 @@ void SGDSolver<Dtype>::SnapshotSolverStateToHDF5(
     const string& model_filename) {
   string snapshot_filename =
       Solver<Dtype>::SnapshotFilename(".solverstate.h5");
-  LOG(INFO) << "Snapshotting solver state to HDF5 file " << snapshot_filename;
   hid_t file_hid = H5Fcreate(snapshot_filename.c_str(), H5F_ACC_TRUNC,
       H5P_DEFAULT, H5P_DEFAULT);
   CHECK_GE(file_hid, 0)
@@ -315,7 +304,6 @@ void SGDSolver<Dtype>::RestoreSolverStateFromBinaryProto(
   this->current_step_ = state.current_step();
   CHECK_EQ(state.history_size(), history_.size())
       << "Incorrect length of history blobs.";
-  LOG(INFO) << "SGDSolver: restoring history";
   for (int i = 0; i < history_.size(); ++i) {
     history_[i]->FromProto(state.history(i));
   }

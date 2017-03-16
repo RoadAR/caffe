@@ -63,7 +63,6 @@ void EltwiseLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     }
     break;
   default:
-    LOG(FATAL) << "Unknown elementwise operation.";
   }
 }
 
@@ -123,7 +122,6 @@ void EltwiseLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
             count, top_diff, i, mask, bottom_diff);
         break;
       default:
-        LOG(FATAL) << "Unknown elementwise operation.";
       }
     }
   }

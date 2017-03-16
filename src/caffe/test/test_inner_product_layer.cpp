@@ -130,8 +130,6 @@ TYPED_TEST(InnerProductLayerTest, TestForward) {
     for (int i = 0; i < count; ++i) {
       EXPECT_GE(data[i], 1.);
     }
-  } else {
-    LOG(ERROR) << "Skipping test due to old architecture.";
   }
 }
 
@@ -203,8 +201,6 @@ TYPED_TEST(InnerProductLayerTest, TestForwardTranspose) {
     for (int i = 0; i < count; ++i) {
       EXPECT_FLOAT_EQ(data[i], data_t[i]);
     }
-  } else {
-    LOG(ERROR) << "Skipping test due to old architecture.";
   }
 }
 
@@ -234,8 +230,6 @@ TYPED_TEST(InnerProductLayerTest, TestForwardNoBatch) {
     for (int i = 0; i < count; ++i) {
       EXPECT_GE(data[i], 1.);
     }
-  } else {
-    LOG(ERROR) << "Skipping test due to old architecture.";
   }
 }
 
@@ -260,8 +254,6 @@ TYPED_TEST(InnerProductLayerTest, TestGradient) {
     GradientChecker<Dtype> checker(1e-2, 1e-3);
     checker.CheckGradientExhaustive(&layer, this->blob_bottom_vec_,
         this->blob_top_vec_);
-  } else {
-    LOG(ERROR) << "Skipping test due to old architecture.";
   }
 }
 
@@ -287,8 +279,6 @@ TYPED_TEST(InnerProductLayerTest, TestGradientTranspose) {
     GradientChecker<Dtype> checker(1e-2, 1e-3);
     checker.CheckGradientExhaustive(&layer, this->blob_bottom_vec_,
         this->blob_top_vec_);
-  } else {
-    LOG(ERROR) << "Skipping test due to old architecture.";
   }
 }
 
@@ -383,8 +373,6 @@ TYPED_TEST(InnerProductLayerTest, TestBackwardTranspose) {
       EXPECT_NE(Dtype(0.), data[i]);
       EXPECT_FLOAT_EQ(data[i], data_t[i]);
     }
-  } else {
-    LOG(ERROR) << "Skipping test due to old architecture.";
   }
 }
 

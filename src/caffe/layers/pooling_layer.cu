@@ -207,7 +207,7 @@ void PoolingLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     }
     break;
   default:
-    LOG(FATAL) << "Unknown pooling method.";
+    ;;
   }
   CUDA_POST_KERNEL_CHECK;
 }
@@ -374,7 +374,7 @@ void PoolingLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
         bottom_diff);
     break;
   default:
-    LOG(FATAL) << "Unknown pooling method.";
+    ;;
   }
   CUDA_POST_KERNEL_CHECK;
 }
