@@ -100,7 +100,6 @@ int main(int argc, char** argv) {
            "    http://www.cs.toronto.edu/~kriz/cifar.html\n"
            "You should gunzip them after downloading.\n");
   } else {
-    google::InitGoogleLogging(argv[0]);
     convert_dataset(string(argv[1]), string(argv[2]), string(argv[3]));
   }
   return 0;

@@ -234,8 +234,6 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  ::google::InitGoogleLogging(argv[0]);
-
   string model_file   = argv[1];
   string trained_file = argv[2];
   string mean_file    = argv[3];

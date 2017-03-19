@@ -22,7 +22,6 @@ DEFINE_string(backend, "lmdb",
         "The backend {leveldb, lmdb} containing the images");
 
 int main(int argc, char** argv) {
-  ::google::InitGoogleLogging(argv[0]);
 
 #ifdef USE_OPENCV
 #ifndef GFLAGS_GFLAGS_H_

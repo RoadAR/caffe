@@ -131,7 +131,6 @@ int main(int argc, char** argv) {
     gflags::ShowUsageWithFlagsRestrict(argv[0],
         "examples/mnist/convert_mnist_data");
   } else {
-    google::InitGoogleLogging(argv[0]);
     convert_dataset(argv[1], argv[2], argv[3], db_backend);
   }
   return 0;
