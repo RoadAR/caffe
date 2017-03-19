@@ -3,8 +3,7 @@
 
 #include <stdint.h>
 #include <cmath>  // for std::fabs and std::signbit
-
-#include "glog/logging.h"
+#include <string.h>
 
 #include "caffe/common.hpp"
 #include "caffe/util/device_alternate.hpp"
@@ -121,7 +120,6 @@ inline int8_t caffe_sign(Dtype val) {
 #define DEFINE_CAFFE_CPU_UNARY_FUNC(name, operation) \
   template<typename Dtype> \
   void caffe_cpu_##name(const int n, const Dtype* x, Dtype* y) { \
-    CHECK_GT(n, 0); CHECK(x); CHECK(y); \
     for (int i = 0; i < n; ++i) { \
       operation; \
     } \

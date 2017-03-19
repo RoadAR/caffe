@@ -53,7 +53,7 @@ class GradientBasedSolverTest : public MultiDeviceTest<TypeParam> {
 
   virtual void InitSolverFromProtoString(const string& proto) {
     SolverParameter param;
-    CHECK(google::protobuf::TextFormat::ParseFromString(proto, &param));
+    google::protobuf::TextFormat::ParseFromString(proto, &param);
     // Set the solver_mode according to current Caffe::mode.
     switch (Caffe::mode()) {
       case Caffe::CPU:
@@ -75,11 +75,6 @@ class GradientBasedSolverTest : public MultiDeviceTest<TypeParam> {
       const bool snapshot = false, const char* from_snapshot = NULL) {
     ostringstream proto;
     int device_id = 0;
-#ifndef CPU_ONLY
-    if (Caffe::mode() == Caffe::GPU) {
-      CUDA_CHECK(cudaGetDevice(&device_id));
-    }
-#endif
     proto <<
        "snapshot_after_train: " << snapshot << " "
        "max_iter: " << num_iters << " "
@@ -458,11 +453,6 @@ class GradientBasedSolverTest : public MultiDeviceTest<TypeParam> {
     const int kIterSize = 1;
     // Test over all numbers of devices.
     int available_devices = 1;
-#ifdef USE_NCCL
-    if (Caffe::mode() == Caffe::GPU) {
-      CUDA_CHECK(cudaGetDeviceCount(&available_devices));
-    }
-#endif
     // Takes a while to test all sizes for each test so sparse
     vector<int> sizes;
     sizes.push_back(1);

@@ -8,7 +8,6 @@ namespace caffe {
 template <typename Dtype>
 void FilterLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
-  CHECK_EQ(top.size(), bottom.size() - 1);
   first_reshape_ = true;
 }
 
@@ -18,14 +17,6 @@ void FilterLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
   // bottom[0...k-1] are the blobs to filter
   // bottom[last] is the "selector_blob"
   int selector_index = bottom.size() - 1;
-  for (int i = 1; i < bottom[selector_index]->num_axes(); ++i) {
-    CHECK_EQ(bottom[selector_index]->shape(i), 1)
-        << "Selector blob dimensions must be singletons (1), except the first";
-  }
-  for (int i = 0; i < bottom.size() - 1; ++i) {
-    CHECK_EQ(bottom[selector_index]->shape(0), bottom[i]->shape(0)) <<
-        "Each bottom should have the same 0th dimension as the selector blob";
-  }
 
   const Dtype* bottom_data_selector = bottom[selector_index]->cpu_data();
   indices_to_forward_.clear();

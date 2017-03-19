@@ -40,7 +40,6 @@ int feature_extraction_pipeline(int argc, char** argv) {
     int device_id = 0;
     if (argc > arg_pos + 1) {
       device_id = atoi(argv[arg_pos + 1]);
-      CHECK_GE(device_id, 0);
     }
     Caffe::SetDevice(device_id);
     Caffe::set_mode(Caffe::GPU);
@@ -89,17 +88,8 @@ int feature_extraction_pipeline(int argc, char** argv) {
 
   std::string save_feature_dataset_names(argv[++arg_pos]);
   std::vector<std::string> dataset_names;
-  boost::split(dataset_names, save_feature_dataset_names,
-               boost::is_any_of(","));
-  CHECK_EQ(blob_names.size(), dataset_names.size()) <<
-      " the number of blob names and dataset names must be equal";
+  boost::split(dataset_names, save_feature_dataset_names, boost::is_any_of(","));
   size_t num_features = blob_names.size();
-
-  for (size_t i = 0; i < num_features; i++) {
-    CHECK(feature_extraction_net->has_blob(blob_names[i]))
-        << "Unknown feature blob name " << blob_names[i]
-        << " in the network " << feature_extraction_proto;
-  }
 
   int num_mini_batches = atoi(argv[++arg_pos]);
 
@@ -138,7 +128,7 @@ int feature_extraction_pipeline(int argc, char** argv) {
         string key_str = caffe::format_int(image_indices[i], 10);
 
         string out;
-        CHECK(datum.SerializeToString(&out));
+        datum.SerializeToString(&out);
         txns.at(i)->Put(key_str, out);
         ++image_indices[i];
         if (image_indices[i] % 1000 == 0) {

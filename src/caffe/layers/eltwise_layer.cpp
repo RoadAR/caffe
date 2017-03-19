@@ -9,13 +9,6 @@ namespace caffe {
 template <typename Dtype>
 void EltwiseLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
-  CHECK(this->layer_param().eltwise_param().coeff_size() == 0
-      || this->layer_param().eltwise_param().coeff_size() == bottom.size()) <<
-      "Eltwise Layer takes one coefficient per bottom blob.";
-  CHECK(!(this->layer_param().eltwise_param().operation()
-      == EltwiseParameter_EltwiseOp_PROD
-      && this->layer_param().eltwise_param().coeff_size())) <<
-      "Eltwise layer only takes coefficients for summation.";
   op_ = this->layer_param_.eltwise_param().operation();
   // Blob-wise coefficients for the elementwise operation.
   coeffs_ = vector<Dtype>(bottom.size(), 1);
@@ -30,9 +23,6 @@ void EltwiseLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 template <typename Dtype>
 void EltwiseLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
-  for (int i = 1; i < bottom.size(); ++i) {
-    CHECK(bottom[i]->shape() == bottom[0]->shape());
-  }
   top[0]->ReshapeLike(*bottom[0]);
   // If max operation, we will initialize the vector index part.
   if (this->layer_param_.eltwise_param().operation() ==

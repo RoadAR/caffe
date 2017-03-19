@@ -44,7 +44,6 @@ void Solver<Dtype>::Init(const SolverParameter& param) {
   //LOG_IF(INFO, Caffe::root_solver()) << "Initializing solver from parameters: "
   //  << std::endl << param.DebugString();
   param_ = param;
-  CHECK_GE(param_.average_loss(), 1) << "average_loss should be non-negative.";
   CheckSnapshotWritePermissions();
   if (param_.random_seed() >= 0) {
     Caffe::set_random_seed(param_.random_seed() + Caffe::solver_rank());
@@ -63,28 +62,16 @@ void Solver<Dtype>::InitTrainNet() {
   const int num_train_nets = param_.has_net() + param_.has_net_param() +
       param_.has_train_net() + param_.has_train_net_param();
   const string& field_names = "net, net_param, train_net, train_net_param";
-  CHECK_GE(num_train_nets, 1) << "SolverParameter must specify a train net "
-      << "using one of these fields: " << field_names;
-  CHECK_LE(num_train_nets, 1) << "SolverParameter must not contain more than "
-      << "one of these fields specifying a train_net: " << field_names;
   NetParameter net_param;
   if (param_.has_train_net_param()) {
-    //LOG_IF(INFO, Caffe::root_solver())
-    //    << "Creating training net specified in train_net_param.";
     net_param.CopyFrom(param_.train_net_param());
   } else if (param_.has_train_net()) {
-    //LOG_IF(INFO, Caffe::root_solver())
-    //    << "Creating training net from train_net file: " << param_.train_net();
     ReadNetParamsFromTextFileOrDie(param_.train_net(), &net_param);
   }
   if (param_.has_net_param()) {
-    //LOG_IF(INFO, Caffe::root_solver())
-    //    << "Creating training net specified in net_param.";
     net_param.CopyFrom(param_.net_param());
   }
   if (param_.has_net()) {
-    //LOG_IF(INFO, Caffe::root_solver())
-    //    << "Creating training net from net file: " << param_.net();
     ReadNetParamsFromTextFileOrDie(param_.net(), &net_param);
   }
   // Set the correct NetState.  We start with the solver defaults (lowest
@@ -101,22 +88,13 @@ void Solver<Dtype>::InitTrainNet() {
 
 template <typename Dtype>
 void Solver<Dtype>::InitTestNets() {
-  CHECK(Caffe::root_solver());
+  /* CHECK(Caffe::root_solver()); */
   const bool has_net_param = param_.has_net_param();
   const bool has_net_file = param_.has_net();
   const int num_generic_nets = has_net_param + has_net_file;
-  CHECK_LE(num_generic_nets, 1)
-      << "Both net_param and net_file may not be specified.";
   const int num_test_net_params = param_.test_net_param_size();
   const int num_test_net_files = param_.test_net_size();
   const int num_test_nets = num_test_net_params + num_test_net_files;
-  if (num_generic_nets) {
-      CHECK_GE(param_.test_iter_size(), num_test_nets)
-          << "test_iter must be specified for each test network.";
-  } else {
-      CHECK_EQ(param_.test_iter_size(), num_test_nets)
-          << "test_iter must be specified for each test network.";
-  }
   // If we have a generic net (specified by net or net_param, rather than
   // test_net or test_net_param), we may have an unlimited number of actual
   // test networks -- the actual number is given by the number of remaining
@@ -124,13 +102,6 @@ void Solver<Dtype>::InitTestNets() {
   // are evaluated.
   const int num_generic_net_instances = param_.test_iter_size() - num_test_nets;
   const int num_test_net_instances = num_test_nets + num_generic_net_instances;
-  if (param_.test_state_size()) {
-    CHECK_EQ(param_.test_state_size(), num_test_net_instances)
-        << "test_state must be unspecified or specified once per test net.";
-  }
-  if (num_test_net_instances) {
-    CHECK_GT(param_.test_interval(), 0);
-  }
   int test_net_id = 0;
   vector<string> sources(num_test_net_instances);
   vector<NetParameter> net_params(num_test_net_instances);
@@ -229,9 +200,7 @@ void Solver<Dtype>::Step(int iters) {
             loss_msg_stream << " (* " << loss_weight
                             << " = " << loss_weight * result_vec[k] << " loss)";
           }
-          LOG_IF(INFO, Caffe::root_solver()) << "    Train net output #"
-              << score_index++ << ": " << output_name << " = "
-              << result_vec[k] << loss_msg_stream.str();
+          score_index++;
         }
       }
     }
@@ -263,7 +232,7 @@ void Solver<Dtype>::Step(int iters) {
 
 template <typename Dtype>
 void Solver<Dtype>::Solve(const char* resume_file) {
-  CHECK(Caffe::root_solver());
+  /* CHECK(Caffe::root_solver()); */
 
   // Initialize to false every time we start solving.
   requested_early_exit_ = false;
@@ -315,9 +284,8 @@ void Solver<Dtype>::TestAll() {
 
 template <typename Dtype>
 void Solver<Dtype>::Test(const int test_net_id) {
-  CHECK(Caffe::root_solver());
-  CHECK_NOTNULL(test_nets_[test_net_id].get())->
-      ShareTrainedLayersWith(net_.get());
+  /* CHECK(Caffe::root_solver()); */
+  test_nets_[test_net_id].get()->ShareTrainedLayersWith(net_.get());
   vector<Dtype> test_score;
   vector<int> test_score_output_id;
   const shared_ptr<Net<Dtype> >& test_net = test_nets_[test_net_id];
@@ -384,7 +352,7 @@ void Solver<Dtype>::Test(const int test_net_id) {
 
 template <typename Dtype>
 void Solver<Dtype>::Snapshot() {
-  CHECK(Caffe::root_solver());
+  /* CHECK(Caffe::root_solver()); */
   string model_filename;
   switch (param_.snapshot_format()) {
   case caffe::SolverParameter_SnapshotFormat_BINARYPROTO:
@@ -403,8 +371,6 @@ void Solver<Dtype>::Snapshot() {
 template <typename Dtype>
 void Solver<Dtype>::CheckSnapshotWritePermissions() {
   if (Caffe::root_solver() && param_.snapshot()) {
-    CHECK(param_.has_snapshot_prefix())
-        << "In solver params, snapshot is specified but snapshot_prefix is not";
     string probe_filename = SnapshotFilename(".tempfile");
     std::ofstream probe_ofs(probe_filename.c_str());
     if (probe_ofs.good()) {

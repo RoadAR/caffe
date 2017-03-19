@@ -1,5 +1,5 @@
 #include <boost/bind.hpp>
-#include <glog/logging.h>
+
 
 #include <signal.h>
 #include <csignal>

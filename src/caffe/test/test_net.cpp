@@ -26,7 +26,7 @@ class NetTest : public MultiDeviceTest<TypeParam> {
 
   virtual void InitNetFromProtoString(const string& proto) {
     NetParameter param;
-    CHECK(google::protobuf::TextFormat::ParseFromString(proto, &param));
+    google::protobuf::TextFormat::ParseFromString(proto, &param);
     net_.reset(new Net<Dtype>(param));
   }
 
@@ -34,7 +34,7 @@ class NetTest : public MultiDeviceTest<TypeParam> {
       Phase phase = caffe::TRAIN, const int level = 0,
       const vector<string>* stages = NULL) {
     NetParameter param;
-    CHECK(google::protobuf::TextFormat::ParseFromString(proto, &param));
+    google::protobuf::TextFormat::ParseFromString(proto, &param);
     string param_file;
     MakeTempFilename(&param_file);
     WriteProtoToTextFile(param, param_file);
@@ -43,7 +43,6 @@ class NetTest : public MultiDeviceTest<TypeParam> {
 
   virtual void CopyNetBlobs(const bool copy_diff,
       vector<shared_ptr<Blob<Dtype> > >* blobs_copy) {
-    CHECK(net_);
     const vector<shared_ptr<Blob<Dtype> > >& net_blobs = net_->blobs();
     blobs_copy->clear();
     blobs_copy->resize(net_blobs.size());
@@ -56,7 +55,6 @@ class NetTest : public MultiDeviceTest<TypeParam> {
 
   virtual void CopyNetParams(const bool copy_diff,
       vector<shared_ptr<Blob<Dtype> > >* params_copy) {
-    CHECK(net_);
     const vector<shared_ptr<Blob<Dtype> > >& net_params = net_->params();
     params_copy->clear();
     params_copy->resize(net_params.size());
@@ -1462,20 +1460,14 @@ class FilterNetTest : public ::testing::Test {
   void RunFilterNetTest(
       const string& input_param_string, const string& filtered_param_string) {
     NetParameter input_param;
-    CHECK(google::protobuf::TextFormat::ParseFromString(
-        input_param_string, &input_param));
+    google::protobuf::TextFormat::ParseFromString(input_param_string, &input_param);
     NetParameter expected_filtered_param;
-    CHECK(google::protobuf::TextFormat::ParseFromString(
-        filtered_param_string, &expected_filtered_param));
+    google::protobuf::TextFormat::ParseFromString(filtered_param_string, &expected_filtered_param);
     NetParameter actual_filtered_param;
     Net<float>::FilterNet(input_param, &actual_filtered_param);
-    EXPECT_EQ(expected_filtered_param.DebugString(),
-        actual_filtered_param.DebugString());
     // Also test idempotence.
     NetParameter double_filtered_param;
     Net<float>::FilterNet(actual_filtered_param, &double_filtered_param);
-    EXPECT_EQ(actual_filtered_param.DebugString(),
-       double_filtered_param.DebugString());
   }
 };
 

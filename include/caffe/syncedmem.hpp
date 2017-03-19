@@ -30,7 +30,6 @@ inline void CaffeMallocHost(void** ptr, size_t size, bool* use_cuda) {
   *ptr = malloc(size);
 #endif
   *use_cuda = false;
-  CHECK(*ptr) << "host allocation of size " << size << " failed";
 }
 
 inline void CaffeFreeHost(void* ptr, bool use_cuda) {

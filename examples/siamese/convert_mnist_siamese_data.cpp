@@ -8,7 +8,7 @@
 #include <fstream>  // NOLINT(readability/streams)
 #include <string>
 
-#include "glog/logging.h"
+
 #include "google/protobuf/text_format.h"
 #include "stdint.h"
 
@@ -38,8 +38,6 @@ void convert_dataset(const char* image_filename, const char* label_filename,
   // Open files
   std::ifstream image_file(image_filename, std::ios::in | std::ios::binary);
   std::ifstream label_file(label_filename, std::ios::in | std::ios::binary);
-  CHECK(image_file) << "Unable to open file " << image_filename;
-  CHECK(label_file) << "Unable to open file " << label_filename;
   // Read the magic and the meta data
   uint32_t magic;
   uint32_t num_items;
@@ -49,15 +47,12 @@ void convert_dataset(const char* image_filename, const char* label_filename,
 
   image_file.read(reinterpret_cast<char*>(&magic), 4);
   magic = swap_endian(magic);
-  CHECK_EQ(magic, 2051) << "Incorrect image file magic.";
   label_file.read(reinterpret_cast<char*>(&magic), 4);
   magic = swap_endian(magic);
-  CHECK_EQ(magic, 2049) << "Incorrect label file magic.";
   image_file.read(reinterpret_cast<char*>(&num_items), 4);
   num_items = swap_endian(num_items);
   label_file.read(reinterpret_cast<char*>(&num_labels), 4);
   num_labels = swap_endian(num_labels);
-  CHECK_EQ(num_items, num_labels);
   image_file.read(reinterpret_cast<char*>(&rows), 4);
   rows = swap_endian(rows);
   image_file.read(reinterpret_cast<char*>(&cols), 4);
@@ -68,10 +63,7 @@ void convert_dataset(const char* image_filename, const char* label_filename,
   leveldb::Options options;
   options.create_if_missing = true;
   options.error_if_exists = true;
-  leveldb::Status status = leveldb::DB::Open(
-      options, db_filename, &db);
-  CHECK(status.ok()) << "Failed to open leveldb " << db_filename
-      << ". Is it already existing?";
+  leveldb::Status status = leveldb::DB::Open(options, db_filename, &db);
 
   char label_i;
   char label_j;

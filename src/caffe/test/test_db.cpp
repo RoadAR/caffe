@@ -33,7 +33,7 @@ class DBTest : public ::testing::Test {
       Datum datum;
       ReadImageToDatum(root_images_ + keys[i], i, &datum);
       string out;
-      CHECK(datum.SerializeToString(&out));
+      datum.SerializeToString(&out);
       txn->Put(keys[i], out);
     }
     txn->Commit();
@@ -123,10 +123,10 @@ TYPED_TEST(DBTest, TestWrite) {
   Datum datum;
   ReadFileToDatum(this->root_images_ + "cat.jpg", 0, &datum);
   string out;
-  CHECK(datum.SerializeToString(&out));
+  datum.SerializeToString(&out);
   txn->Put("cat.jpg", out);
   ReadFileToDatum(this->root_images_ + "fish-bike.jpg", 1, &datum);
-  CHECK(datum.SerializeToString(&out));
+  datum.SerializeToString(&out);
   txn->Put("fish-bike.jpg", out);
   txn->Commit();
 }

@@ -18,13 +18,6 @@ void ScaleLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
     // scale is a learned parameter; initialize it
     axis_ = bottom[0]->CanonicalAxisIndex(param.axis());
     const int num_axes = param.num_axes();
-    CHECK_GE(num_axes, -1) << "num_axes must be non-negative, "
-                           << "or -1 to extend to the end of bottom[0]";
-    if (num_axes >= 0) {
-      CHECK_GE(bottom[0]->num_axes(), axis_ + num_axes)
-          << "scale blob's shape extends past bottom[0]'s shape when applied "
-          << "starting with bottom[0] axis = " << axis_;
-    }
     this->blobs_.resize(1);
     const vector<int>::const_iterator& shape_start =
         bottom[0]->shape().begin() + axis_;
@@ -85,14 +78,6 @@ void ScaleLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
   // performant.)
   axis_ = (scale->num_axes() == 0) ?
       0 : bottom[0]->CanonicalAxisIndex(param.axis());
-  CHECK_GE(bottom[0]->num_axes(), axis_ + scale->num_axes())
-      << "scale blob's shape extends past bottom[0]'s shape when applied "
-      << "starting with bottom[0] axis = " << axis_;
-  for (int i = 0; i < scale->num_axes(); ++i) {
-    CHECK_EQ(bottom[0]->shape(axis_ + i), scale->shape(i))
-        << "dimension mismatch between bottom[0]->shape(" << axis_ + i
-        << ") and scale->shape(" << i << ")";
-  }
   outer_dim_ = bottom[0]->count(0, axis_);
   scale_dim_ = scale->count();
   inner_dim_ = bottom[0]->count(axis_ + scale->num_axes());

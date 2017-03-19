@@ -21,18 +21,7 @@ template <typename Dtype>
 void LSTMUnitLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top) {
   const int num_instances = bottom[0]->shape(1);
-  for (int i = 0; i < bottom.size(); ++i) {
-    if (i == 2) {
-      CHECK_EQ(2, bottom[i]->num_axes());
-    } else {
-      CHECK_EQ(3, bottom[i]->num_axes());
-    }
-    CHECK_EQ(1, bottom[i]->shape(0));
-    CHECK_EQ(num_instances, bottom[i]->shape(1));
-  }
   hidden_dim_ = bottom[0]->shape(2);
-  CHECK_EQ(num_instances, bottom[1]->shape(1));
-  CHECK_EQ(4 * hidden_dim_, bottom[1]->shape(2));
   top[0]->ReshapeLike(*bottom[0]);
   top[1]->ReshapeLike(*bottom[0]);
   X_acts_.ReshapeLike(*bottom[1]);
@@ -72,7 +61,6 @@ void LSTMUnitLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 template <typename Dtype>
 void LSTMUnitLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
     const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
-  CHECK(!propagate_down[2]) << "Cannot backpropagate to sequence indicators.";
   if (!propagate_down[0] && !propagate_down[1]) { return; }
 
   const int num = bottom[0]->shape(1);

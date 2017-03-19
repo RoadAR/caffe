@@ -46,7 +46,6 @@ void LSTMLayer<Dtype>::OutputBlobNames(vector<string>* names) const {
 template <typename Dtype>
 void LSTMLayer<Dtype>::FillUnrolledNet(NetParameter* net_param) const {
   const int num_output = this->layer_param_.recurrent_param().num_output();
-  CHECK_GT(num_output, 0) << "num_output must be positive";
   const FillerParameter& weight_filler =
       this->layer_param_.recurrent_param().weight_filler();
   const FillerParameter& bias_filler =
@@ -85,7 +84,6 @@ void LSTMLayer<Dtype>::FillUnrolledNet(NetParameter* net_param) const {
 
   vector<BlobShape> input_shapes;
   RecurrentInputShapes(&input_shapes);
-  CHECK_EQ(2, input_shapes.size());
 
   LayerParameter* input_layer_param = net_param->add_layer();
   input_layer_param->set_type("Input");

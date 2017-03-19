@@ -16,9 +16,6 @@ void MemoryDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
   height_ = this->layer_param_.memory_data_param().height();
   width_ = this->layer_param_.memory_data_param().width();
   size_ = channels_ * height_ * width_;
-  CHECK_GT(batch_size_ * size_, 0) <<
-      "batch_size, channels, height, and width must be specified and"
-      " positive in memory_data_param";
   vector<int> label_shape(1, batch_size_);
   top[0]->Reshape(batch_size_, channels_, height_, width_);
   top[1]->Reshape(label_shape);
@@ -32,12 +29,7 @@ void MemoryDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
 
 template <typename Dtype>
 void MemoryDataLayer<Dtype>::AddDatumVector(const vector<Datum>& datum_vector) {
-  CHECK(!has_new_data_) <<
-      "Can't add data until current data has been consumed.";
   size_t num = datum_vector.size();
-  CHECK_GT(num, 0) << "There is no datum to add.";
-  CHECK_EQ(num % batch_size_, 0) <<
-      "The added data must be a multiple of the batch size.";
   added_data_.Reshape(num, channels_, height_, width_);
   added_label_.Reshape(num, 1, 1, 1);
   // Apply data transformations (mirror, scale, crop...)
@@ -58,11 +50,6 @@ template <typename Dtype>
 void MemoryDataLayer<Dtype>::AddMatVector(const vector<cv::Mat>& mat_vector,
     const vector<int>& labels) {
   size_t num = mat_vector.size();
-  CHECK(!has_new_data_) <<
-      "Can't add mat until current data has been consumed.";
-  CHECK_GT(num, 0) << "There is no mat to add";
-  CHECK_EQ(num % batch_size_, 0) <<
-      "The added data must be a multiple of the batch size.";
   added_data_.Reshape(num, channels_, height_, width_);
   added_label_.Reshape(num, 1, 1, 1);
   // Apply data transformations (mirror, scale, crop...)
@@ -81,9 +68,6 @@ void MemoryDataLayer<Dtype>::AddMatVector(const vector<cv::Mat>& mat_vector,
 
 template <typename Dtype>
 void MemoryDataLayer<Dtype>::Reset(Dtype* data, Dtype* labels, int n) {
-  CHECK(data);
-  CHECK(labels);
-  CHECK_EQ(n % batch_size_, 0) << "n must be a multiple of batch size";
   // Warn with transformation parameters since a memory array is meant to
   // be generic and no transformations are done with Reset().
   // if (this->layer_param_.has_transform_param()) {
@@ -97,8 +81,6 @@ void MemoryDataLayer<Dtype>::Reset(Dtype* data, Dtype* labels, int n) {
 
 template <typename Dtype>
 void MemoryDataLayer<Dtype>::set_batch_size(int new_size) {
-  CHECK(!has_new_data_) <<
-      "Can't change batch_size until current data has been consumed.";
   batch_size_ = new_size;
   added_data_.Reshape(batch_size_, channels_, height_, width_);
   added_label_.Reshape(batch_size_, 1, 1, 1);
@@ -107,7 +89,6 @@ void MemoryDataLayer<Dtype>::set_batch_size(int new_size) {
 template <typename Dtype>
 void MemoryDataLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
-  CHECK(data_) << "MemoryDataLayer needs to be initialized by calling Reset";
   top[0]->Reshape(batch_size_, channels_, height_, width_);
   top[1]->Reshape(batch_size_, 1, 1, 1);
   top[0]->set_cpu_data(data_ + pos_ * size_);

@@ -71,8 +71,6 @@ void SPPLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   bottom_h_ = bottom[0]->height();
   bottom_w_ = bottom[0]->width();
   reshaped_first_time_ = false;
-  CHECK_GT(bottom_h_, 0) << "Input dimensions cannot be zero.";
-  CHECK_GT(bottom_w_, 0) << "Input dimensions cannot be zero.";
 
   pyramid_height_ = spp_param.pyramid_height();
   split_top_vec_.clear();
@@ -145,8 +143,6 @@ void SPPLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 template <typename Dtype>
 void SPPLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
-  CHECK_EQ(4, bottom[0]->num_axes()) << "Input must have 4 axes, "
-      << "corresponding to (num, channels, height, width)";
   // Do nothing if bottom shape is unchanged since last Reshape
   if (num_ == bottom[0]->num() && channels_ == bottom[0]->channels() &&
       bottom_h_ == bottom[0]->height() && bottom_w_ == bottom[0]->width() &&

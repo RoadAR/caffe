@@ -76,8 +76,8 @@ void WindowDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
   }
 
   std::ifstream infile(this->layer_param_.window_data_param().source().c_str());
-  CHECK(infile.good()) << "Failed to open window file "
-      << this->layer_param_.window_data_param().source() << std::endl;
+  auto ff = infile.good();
+  auto lp1 = this->layer_param_.window_data_param().source();
 
   map<int, int> label_hist;
   label_hist.insert(std::make_pair(0, 0));
@@ -88,7 +88,6 @@ void WindowDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
     //LOG(FATAL) << "Window file is empty";
   }
   do {
-    CHECK_EQ(hashtag, "#");
     // read image path
     string image_path;
     infile >> image_path;
@@ -131,7 +130,6 @@ void WindowDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
       // add window to foreground list or background list
       if (overlap >= fg_threshold) {
         int label = window[WindowDataLayer::LABEL];
-        CHECK_GT(label, 0);
         fg_windows_.push_back(window);
         label_hist.insert(std::make_pair(label, 0));
         label_hist[label]++;
@@ -144,27 +142,10 @@ void WindowDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
       }
     }
 
-    if (image_index % 100 == 0) {
-      //LOG(INFO) << "num: " << image_index << " "
-      //    << image_path << " "
-      //    << image_size[0] << " "
-      //    << image_size[1] << " "
-      //    << image_size[2] << " "
-      //    << "windows to process: " << num_windows;
-    }
   } while (infile >> hashtag >> image_index);
-
-  //LOG(INFO) << "Number of images: " << image_index+1;
-
-  //LOG(INFO) << "Amount of context padding: "
-  //    << this->layer_param_.window_data_param().context_pad();
-
-  //LOG(INFO) << "Crop mode: "
-  //    << this->layer_param_.window_data_param().crop_mode();
 
   // image
   const int crop_size = this->transform_param_.crop_size();
-  CHECK_GT(crop_size, 0);
   const int batch_size = this->layer_param_.window_data_param().batch_size();
   top[0]->Reshape(batch_size, channels, crop_size, crop_size);
   for (int i = 0; i < this->prefetch_.size(); ++i)
@@ -189,13 +170,9 @@ void WindowDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
     data_mean_.FromProto(blob_proto);
   }
   if (has_mean_values_) {
-    CHECK(has_mean_file_ == false) <<
-      "Cannot specify mean_file and mean_value at the same time";
     for (int c = 0; c < this->transform_param_.mean_value_size(); ++c) {
       mean_values_.push_back(this->transform_param_.mean_value(c));
     }
-    CHECK(mean_values_.size() == 1 || mean_values_.size() == channels) <<
-     "Specify either 1 mean_value or as many as channels: " << channels;
     if (channels > 1 && mean_values_.size() == 1) {
       // Replicate the mean_value for simplicity
       for (int c = 1; c < channels; ++c) {
@@ -207,7 +184,6 @@ void WindowDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
 
 template <typename Dtype>
 unsigned int WindowDataLayer<Dtype>::PrefetchRand() {
-  CHECK(prefetch_rng_);
   caffe::rng_t* prefetch_rng =
       static_cast<caffe::rng_t*>(prefetch_rng_->generator());
   return (*prefetch_rng)();
@@ -255,8 +231,6 @@ void WindowDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
   const int num_samples[2] = { batch_size - num_fg, num_fg };
 
   int item_id = 0;
-  CHECK_GT(fg_windows_.size(), 0);
-  CHECK_GT(bg_windows_.size(), 0);
 
   // sample from bg set then fg set
   for (int is_fg = 0; is_fg < 2; ++is_fg) {
@@ -335,10 +309,6 @@ void WindowDataLayer<Dtype>::load_batch(Batch<Dtype>* batch) {
         x2 = x2 - pad_x2;
         y1 = y1 + pad_y1;
         y2 = y2 - pad_y2;
-        CHECK_GT(x1, -1);
-        CHECK_GT(y1, -1);
-        CHECK_LT(x2, cv_img.cols);
-        CHECK_LT(y2, cv_img.rows);
 
         int clipped_height = y2-y1+1;
         int clipped_width = x2-x1+1;

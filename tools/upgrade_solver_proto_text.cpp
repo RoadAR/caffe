@@ -16,7 +16,6 @@ using std::ofstream;
 using namespace caffe;  // NOLINT(build/namespaces)
 
 int main(int argc, char** argv) {
-  FLAGS_alsologtostderr = 1;  // Print output to stderr (while still logging)
   if (argc != 3) {
     return 1;
   }

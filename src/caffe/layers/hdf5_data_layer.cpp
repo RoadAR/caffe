@@ -40,14 +40,9 @@ void HDF5DataLayer<Dtype>::LoadHDF5FileData(const char* filename) {
   }
 
   herr_t status = H5Fclose(file_id);
-  CHECK_GE(status, 0) << "Failed to close HDF5 file: " << filename;
 
   // MinTopBlobs==1 guarantees at least one top blob
-  CHECK_GE(hdf_blobs_[0]->num_axes(), 1) << "Input must have at least 1 axis.";
   const int num = hdf_blobs_[0]->shape(0);
-  for (int i = 1; i < top_size; ++i) {
-    CHECK_EQ(hdf_blobs_[i]->shape(0), num);
-  }
   // Default to identity permutation.
   data_permutation_.clear();
   data_permutation_.resize(hdf_blobs_[0]->shape(0));
@@ -64,8 +59,7 @@ template <typename Dtype>
 void HDF5DataLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   // Refuse transformation parameters since HDF5 is totally generic.
-  CHECK(!this->layer_param_.has_transform_param()) <<
-      this->type() << " does not transform data.";
+  this->layer_param_.has_transform_param();
   // Read the source to parse the filenames.
   const string& source = this->layer_param_.hdf5_data_param().source();
   hdf_filenames_.clear();
@@ -79,8 +73,6 @@ void HDF5DataLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   source_file.close();
   num_files_ = hdf_filenames_.size();
   current_file_ = 0;
-  CHECK_GE(num_files_, 1) << "Must have at least 1 HDF5 filename listed in "
-    << source;
 
   file_permutation_.clear();
   file_permutation_.resize(num_files_);

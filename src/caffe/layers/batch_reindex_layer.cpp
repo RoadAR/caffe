@@ -8,7 +8,6 @@ namespace caffe {
 template<typename Dtype>
 void BatchReindexLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
                                        const vector<Blob<Dtype>*>& top) {
-  CHECK_EQ(1, bottom[1]->num_axes());
   vector<int> newshape;
   newshape.push_back(bottom[1]->shape(0));
   for (int i = 1; i < bottom[0]->shape().size(); ++i) {
@@ -21,12 +20,6 @@ template<typename Dtype>
 void BatchReindexLayer<Dtype>::check_batch_reindex(int initial_num,
                                                    int final_num,
                                                    const Dtype* ridx_data) {
-  for (int i = 0; i < final_num; ++i) {
-    CHECK_GE(ridx_data[i], 0)
-        << "Index specified for reindex layer was negative.";
-    CHECK_LT(ridx_data[i], initial_num)
-        << "Index specified for reindex layer was greater than batch size.";
-  }
 }
 
 template<typename Dtype>
@@ -52,7 +45,6 @@ template<typename Dtype>
 void BatchReindexLayer<Dtype>::Backward_cpu(
     const vector<Blob<Dtype>*>& top, const vector<bool>& propagate_down,
     const vector<Blob<Dtype>*>& bottom) {
-  CHECK(!propagate_down[1]) << "Cannot backprop to index.";
   if (!propagate_down[0]) {
     return;
   }

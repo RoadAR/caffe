@@ -23,7 +23,7 @@ void caffe_conv(const Blob<Dtype>* in, ConvolutionParameter* conv_param,
     const vector<shared_ptr<Blob<Dtype> > >& weights,
     Blob<Dtype>* out) {
   const bool has_depth = (out->num_axes() == 5);
-  if (!has_depth) { CHECK_EQ(4, out->num_axes()); }
+  if (!has_depth) { }
   // Kernel size, stride, and pad
   int kernel_h, kernel_w;
   if (conv_param->has_kernel_h() || conv_param->has_kernel_w()) {

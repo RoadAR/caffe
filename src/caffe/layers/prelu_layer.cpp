@@ -11,8 +11,6 @@ namespace caffe {
 template <typename Dtype>
 void PReLULayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top) {
-  CHECK_GE(bottom[0]->num_axes(), 2)
-      << "Number of axes of bottom blob must be >=2.";
   PReLUParameter prelu_param = this->layer_param().prelu_param();
   int channels = bottom[0]->channels();
   channel_shared_ = prelu_param.channel_shared();
@@ -35,13 +33,6 @@ void PReLULayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
     }
     filler->Fill(this->blobs_[0].get());
   }
-  if (channel_shared_) {
-    CHECK_EQ(this->blobs_[0]->count(), 1)
-        << "Negative slope size is inconsistent with prototxt config";
-  } else {
-    CHECK_EQ(this->blobs_[0]->count(), channels)
-        << "Negative slope size is inconsistent with prototxt config";
-  }
 
   // Propagate gradients to the parameters (as directed by backward pass).
   this->param_propagate_down_.resize(this->blobs_.size(), true);
@@ -53,8 +44,6 @@ void PReLULayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 template <typename Dtype>
 void PReLULayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top) {
-  CHECK_GE(bottom[0]->num_axes(), 2)
-      << "Number of axes of bottom blob must be >=2.";
   top[0]->ReshapeLike(*bottom[0]);
   if (bottom[0] == top[0]) {
     // For in-place computation

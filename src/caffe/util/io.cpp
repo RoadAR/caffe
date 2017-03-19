@@ -33,7 +33,6 @@ using google::protobuf::Message;
 
 bool ReadProtoFromTextFile(const char* filename, Message* proto) {
   int fd = open(filename, O_RDONLY);
-  CHECK_NE(fd, -1) << "File not found: " << filename;
   FileInputStream* input = new FileInputStream(fd);
   bool success = google::protobuf::TextFormat::Parse(input, proto);
   delete input;
@@ -44,14 +43,12 @@ bool ReadProtoFromTextFile(const char* filename, Message* proto) {
 void WriteProtoToTextFile(const Message& proto, const char* filename) {
   int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
   FileOutputStream* output = new FileOutputStream(fd);
-  CHECK(google::protobuf::TextFormat::Print(proto, output));
   delete output;
   close(fd);
 }
 
 bool ReadProtoFromBinaryFile(const char* filename, Message* proto) {
   int fd = open(filename, O_RDONLY);
-  CHECK_NE(fd, -1) << "File not found: " << filename;
   ZeroCopyInputStream* raw_input = new FileInputStream(fd);
   CodedInputStream* coded_input = new CodedInputStream(raw_input);
   coded_input->SetTotalBytesLimit(kProtoReadBytesLimit, 536870912);
@@ -66,7 +63,7 @@ bool ReadProtoFromBinaryFile(const char* filename, Message* proto) {
 
 void WriteProtoToBinaryFile(const Message& proto, const char* filename) {
   fstream output(filename, ios::out | ios::trunc | ios::binary);
-  CHECK(proto.SerializeToOstream(&output));
+  proto.SerializeToOstream(&output);
 }
 
 #ifdef USE_OPENCV
@@ -164,7 +161,7 @@ bool ReadFileToDatum(const string& filename, const int label,
 #ifdef USE_OPENCV
 cv::Mat DecodeDatumToCVMatNative(const Datum& datum) {
   cv::Mat cv_img;
-  CHECK(datum.encoded()) << "Datum not encoded";
+  auto aa = datum.encoded();
   const string& data = datum.data();
   std::vector<char> vec_data(data.c_str(), data.c_str() + data.size());
   cv_img = cv::imdecode(vec_data, -1);
@@ -172,7 +169,7 @@ cv::Mat DecodeDatumToCVMatNative(const Datum& datum) {
 }
 cv::Mat DecodeDatumToCVMat(const Datum& datum, bool is_color) {
   cv::Mat cv_img;
-  CHECK(datum.encoded()) << "Datum not encoded";
+  auto aa = datum.encoded();
   const string& data = datum.data();
   std::vector<char> vec_data(data.c_str(), data.c_str() + data.size());
   int cv_read_flag = (is_color ? CV_LOAD_IMAGE_COLOR :
@@ -203,7 +200,6 @@ bool DecodeDatum(Datum* datum, bool is_color) {
 }
 
 void CVMatToDatum(const cv::Mat& cv_img, Datum* datum) {
-  CHECK(cv_img.depth() == CV_8U) << "Image data type must be unsigned byte";
   datum->set_channels(cv_img.channels());
   datum->set_height(cv_img.rows);
   datum->set_width(cv_img.cols);

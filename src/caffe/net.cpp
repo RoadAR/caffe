@@ -70,12 +70,6 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
     }
     // Setup layer.
     const LayerParameter& layer_param = param.layer(layer_id);
-    if (layer_param.propagate_down_size() > 0) {
-      CHECK_EQ(layer_param.propagate_down_size(),
-          layer_param.bottom_size())
-          << "propagate_down param must be specified "
-          << "either 0 or bottom_size times ";
-    }
     layers_.push_back(LayerRegistry<Dtype>::CreateLayer(layer_param));
     layer_names_.push_back(layer_param.name());
     bool need_backward = false;
@@ -123,8 +117,6 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
     }
     const int param_size = layer_param.param_size();
     const int num_param_blobs = layers_[layer_id]->blobs().size();
-    CHECK_LE(param_size, num_param_blobs)
-        << "Too many params specified for layer " << layer_param.name();
     ParamSpec default_param_spec;
     for (int param_id = 0; param_id < num_param_blobs; ++param_id) {
       const ParamSpec* param_spec = (param_id < param_size) ?
@@ -239,8 +231,6 @@ void Net<Dtype>::FilterNet(const NetParameter& param,
   for (int i = 0; i < param.layer_size(); ++i) {
     const LayerParameter& layer_param = param.layer(i);
     const string& layer_name = layer_param.name();
-    CHECK(layer_param.include_size() == 0 || layer_param.exclude_size() == 0)
-          << "Specify either include rules or exclude rules; not both.";
     // If no include rules are specified, the layer is included by default and
     // only excluded if it meets one of the exclude rules.
     bool layer_included = (layer_param.include_size() == 0);
@@ -418,39 +408,12 @@ void Net<Dtype>::AppendParam(const NetParameter& param, const int layer_id,
     const int param_size = layer_param.param_size();
     if (param_size > param_id && (layer_param.param(param_id).share_mode() ==
                                   ParamSpec_DimCheckMode_PERMISSIVE)) {
-      // Permissive dimension checking -- only check counts are the same.
-      CHECK_EQ(this_blob->count(), owner_blob->count())
-          << "Cannot share param '" << param_name << "' owned by layer '"
-          << layer_names_[owner_layer_id] << "' with layer '"
-          << layer_names_[layer_id] << "'; count mismatch.  Owner layer param "
-          << "shape is " << owner_blob->shape_string() << "; sharing layer "
-          << "shape is " << this_blob->shape_string();
-    } else {
-      // Strict dimension checking -- all dims must be the same.
-      CHECK(this_blob->shape() == owner_blob->shape())
-          << "Cannot share param '" << param_name << "' owned by layer '"
-          << layer_names_[owner_layer_id] << "' with layer '"
-          << layer_names_[layer_id] << "'; shape mismatch.  Owner layer param "
-          << "shape is " << owner_blob->shape_string() << "; sharing layer "
-          << "expects shape " << this_blob->shape_string();
     }
     const int learnable_param_id = learnable_param_ids_[owner_net_param_id];
     learnable_param_ids_.push_back(learnable_param_id);
-    if (param_spec->has_lr_mult()) {
-      if (has_params_lr_[learnable_param_id]) {
-        CHECK_EQ(param_spec->lr_mult(), params_lr_[learnable_param_id])
-            << "Shared param '" << param_name << "' has mismatched lr_mult.";
-      } else {
-        has_params_lr_[learnable_param_id] = true;
-        params_lr_[learnable_param_id] = param_spec->lr_mult();
-      }
-    }
+    if (param_spec->has_lr_mult()) { }
     if (param_spec->has_decay_mult()) {
-      if (has_params_decay_[learnable_param_id]) {
-        CHECK_EQ(param_spec->decay_mult(),
-                 params_weight_decay_[learnable_param_id])
-            << "Shared param '" << param_name << "' has mismatched decay_mult.";
-      } else {
+      if (has_params_decay_[learnable_param_id]) { } else {
         has_params_decay_[learnable_param_id] = true;
         params_weight_decay_[learnable_param_id] = param_spec->decay_mult();
       }
@@ -460,8 +423,6 @@ void Net<Dtype>::AppendParam(const NetParameter& param, const int layer_id,
 
 template <typename Dtype>
 Dtype Net<Dtype>::ForwardFromTo(int start, int end) {
-  CHECK_GE(start, 0);
-  CHECK_LT(end, layers_.size());
   Dtype loss = 0;
   for (int i = start; i <= end; ++i) {
     for (int c = 0; c < before_forward_.size(); ++c) {
@@ -509,8 +470,6 @@ const vector<Blob<Dtype>*>& Net<Dtype>::Forward(
 
 template <typename Dtype>
 void Net<Dtype>::BackwardFromTo(int start, int end) {
-  CHECK_GE(end, 0);
-  CHECK_LT(start, layers_.size());
   for (int i = start; i >= end; --i) {
     for (int c = 0; c < before_backward_.size(); ++c) {
       before_backward_[c]->run(i);
@@ -557,15 +516,8 @@ void Net<Dtype>::ShareTrainedLayersWith(const Net* other) {
     }
     vector<shared_ptr<Blob<Dtype> > >& target_blobs =
         layers_[target_layer_id]->blobs();
-    CHECK_EQ(target_blobs.size(), source_layer->blobs().size())
-        << "Incompatible number of blobs for layer " << source_layer_name;
     for (int j = 0; j < target_blobs.size(); ++j) {
       Blob<Dtype>* source_blob = source_layer->blobs()[j].get();
-      CHECK(target_blobs[j]->shape() == source_blob->shape())
-          << "Cannot share param " << j << " weights from layer '"
-          << source_layer_name << "'; shape mismatch.  Source param shape is "
-          << source_blob->shape_string() << "; target param shape is "
-          << target_blobs[j]->shape_string();
       target_blobs[j]->ShareData(*source_blob);
     }
   }
@@ -609,8 +561,6 @@ void Net<Dtype>::CopyTrainedLayersFrom(const NetParameter& param) {
     }
     vector<shared_ptr<Blob<Dtype> > >& target_blobs =
         layers_[target_layer_id]->blobs();
-    CHECK_EQ(target_blobs.size(), source_layer.blobs_size())
-        << "Incompatible number of blobs for layer " << source_layer_name;
     for (int j = 0; j < target_blobs.size(); ++j) {
       if (!target_blobs[j]->ShapeEquals(source_layer.blobs(j))) {
         Blob<Dtype> source_blob;
@@ -645,9 +595,7 @@ template <typename Dtype>
 void Net<Dtype>::CopyTrainedLayersFromHDF5(const string trained_filename) {
   hid_t file_hid = H5Fopen(trained_filename.c_str(), H5F_ACC_RDONLY,
                            H5P_DEFAULT);
-  CHECK_GE(file_hid, 0) << "Couldn't open " << trained_filename;
   hid_t data_hid = H5Gopen2(file_hid, "data", H5P_DEFAULT);
-  CHECK_GE(data_hid, 0) << "Error reading weights from " << trained_filename;
   int num_layers = hdf5_get_num_links(data_hid);
   for (int i = 0; i < num_layers; ++i) {
     string source_layer_name = hdf5_get_name_by_idx(data_hid, i);
@@ -659,12 +607,8 @@ void Net<Dtype>::CopyTrainedLayersFromHDF5(const string trained_filename) {
         layers_[target_layer_id]->blobs();
     hid_t layer_hid = H5Gopen2(data_hid, source_layer_name.c_str(),
         H5P_DEFAULT);
-    CHECK_GE(layer_hid, 0)
-        << "Error reading weights from " << trained_filename;
     // Check that source layer doesn't have more params than target layer
     int num_source_params = hdf5_get_num_links(layer_hid);
-    CHECK_LE(num_source_params, target_blobs.size())
-        << "Incompatible number of blobs for layer " << source_layer_name;
     for (int j = 0; j < target_blobs.size(); ++j) {
       ostringstream oss;
       oss << j;
@@ -699,32 +643,21 @@ void Net<Dtype>::ToProto(NetParameter* param, bool write_diff) const {
 
 template <typename Dtype>
 void Net<Dtype>::ToHDF5(const string& filename, bool write_diff) const {
-  hid_t file_hid = H5Fcreate(filename.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT,
-      H5P_DEFAULT);
-  CHECK_GE(file_hid, 0)
-      << "Couldn't open " << filename << " to save weights.";
-  hid_t data_hid = H5Gcreate2(file_hid, "data", H5P_DEFAULT, H5P_DEFAULT,
-      H5P_DEFAULT);
-  CHECK_GE(data_hid, 0) << "Error saving weights to " << filename << ".";
+  hid_t file_hid = H5Fcreate(filename.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+  hid_t data_hid = H5Gcreate2(file_hid, "data", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   hid_t diff_hid = -1;
   if (write_diff) {
-    diff_hid = H5Gcreate2(file_hid, "diff", H5P_DEFAULT, H5P_DEFAULT,
-        H5P_DEFAULT);
-    CHECK_GE(diff_hid, 0) << "Error saving weights to " << filename << ".";
+    diff_hid = H5Gcreate2(file_hid, "diff", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
   }
   for (int layer_id = 0; layer_id < layers_.size(); ++layer_id) {
     const LayerParameter& layer_param = layers_[layer_id]->layer_param();
     string layer_name = layer_param.name();
     hid_t layer_data_hid = H5Gcreate2(data_hid, layer_name.c_str(),
         H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-    CHECK_GE(layer_data_hid, 0)
-        << "Error saving weights to " << filename << ".";
     hid_t layer_diff_hid = -1;
     if (write_diff) {
       layer_diff_hid = H5Gcreate2(diff_hid, layer_name.c_str(),
           H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-      CHECK_GE(layer_diff_hid, 0)
-          << "Error saving weights to " << filename << ".";
     }
     int num_params = layers_[layer_id]->blobs().size();
     for (int param_id = 0; param_id < num_params; ++param_id) {

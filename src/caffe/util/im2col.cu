@@ -162,7 +162,6 @@ void im2col_nd_gpu(const Dtype* data_im, const int num_spatial_axes,
     const int* kernel_shape, const int* pad, const int* stride,
     const int* dilation, Dtype* data_col) {
   // num_axes should be smaller than block size
-  DCHECK_LT(num_spatial_axes, CAFFE_CUDA_NUM_THREADS);
   switch (num_spatial_axes) {
   case 1:
     im2col_nd_gpu_kernel<Dtype, 1>  // NOLINT_NEXT_LINE(whitespace/operators)
@@ -428,7 +427,6 @@ void col2im_nd_gpu(const Dtype* data_col, const int num_spatial_axes,
     const int* kernel_shape, const int* pad, const int* stride,
     const int* dilation, Dtype* data_im) {
   // num_axes should be smaller than block size
-  DCHECK_LT(num_spatial_axes, CAFFE_CUDA_NUM_THREADS);
   switch (num_spatial_axes) {
   case 1:
     col2im_nd_gpu_kernel<Dtype, 1>  // NOLINT_NEXT_LINE(whitespace/operators)

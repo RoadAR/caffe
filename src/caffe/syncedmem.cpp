@@ -96,7 +96,6 @@ const void* SyncedMemory::cpu_data() {
 
 void SyncedMemory::set_cpu_data(void* data) {
   check_device();
-  CHECK(data);
   if (own_cpu_data_) {
     CaffeFreeHost(cpu_ptr_, cpu_malloc_use_cuda_);
   }

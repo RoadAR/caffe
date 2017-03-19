@@ -11,10 +11,6 @@
 
 namespace caffe { namespace db {
 
-inline void MDB_CHECK(int mdb_status) {
-  CHECK_EQ(mdb_status, MDB_SUCCESS) << mdb_strerror(mdb_status);
-}
-
 class LMDBCursor : public Cursor {
  public:
   explicit LMDBCursor(MDB_txn* mdb_txn, MDB_cursor* mdb_cursor)
@@ -42,7 +38,6 @@ class LMDBCursor : public Cursor {
     if (mdb_status == MDB_NOTFOUND) {
       valid_ = false;
     } else {
-      MDB_CHECK(mdb_status);
       valid_ = true;
     }
   }

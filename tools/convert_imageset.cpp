@@ -16,7 +16,7 @@
 
 #include "boost/scoped_ptr.hpp"
 #include "gflags/gflags.h"
-#include "glog/logging.h"
+
 
 #include "caffe/proto/caffe.pb.h"
 #include "caffe/util/db.hpp"
@@ -45,8 +45,6 @@ DEFINE_string(encode_type, "",
 
 int main(int argc, char** argv) {
 #ifdef USE_OPENCV
-  // Print output to stderr (while still logging)
-  FLAGS_alsologtostderr = 1;
 
 #ifndef GFLAGS_GFLAGS_H_
   namespace gflags = google;
@@ -120,8 +118,6 @@ int main(int argc, char** argv) {
         data_size_initialized = true;
       } else {
         const std::string& data = datum.data();
-        CHECK_EQ(data.size(), data_size) << "Incorrect data field size "
-            << data.size();
       }
     }
     // sequential
@@ -129,7 +125,7 @@ int main(int argc, char** argv) {
 
     // Put in db
     string out;
-    CHECK(datum.SerializeToString(&out));
+    datum.SerializeToString(&out);
     txn->Put(key_str, out);
 
     if (++count % 1000 == 0) {

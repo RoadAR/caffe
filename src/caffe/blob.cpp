@@ -21,7 +21,6 @@ void Blob<Dtype>::Reshape(const int num, const int channels, const int height,
 
 template <typename Dtype>
 void Blob<Dtype>::Reshape(const vector<int>& shape) {
-  CHECK_LE(shape.size(), kMaxBlobAxes);
   count_ = 1;
   shape_.resize(shape.size());
   if (!shape_data_ || shape_data_->size() < shape.size() * sizeof(int)) {
@@ -29,10 +28,6 @@ void Blob<Dtype>::Reshape(const vector<int>& shape) {
   }
   int* shape_data = static_cast<int*>(shape_data_->mutable_cpu_data());
   for (int i = 0; i < shape.size(); ++i) {
-    CHECK_GE(shape[i], 0);
-    if (count_ != 0) {
-      CHECK_LE(shape[i], INT_MAX / count_) << "blob size exceeds INT_MAX";
-    }
     count_ *= shape[i];
     shape_[i] = shape[i];
     shape_data[i] = shape[i];
@@ -46,7 +41,6 @@ void Blob<Dtype>::Reshape(const vector<int>& shape) {
 
 template <typename Dtype>
 void Blob<Dtype>::Reshape(const BlobShape& shape) {
-  CHECK_LE(shape.dim_size(), kMaxBlobAxes);
   vector<int> shape_vec(shape.dim_size());
   for (int i = 0; i < shape.dim_size(); ++i) {
     shape_vec[i] = shape.dim(i);
@@ -76,19 +70,16 @@ Blob<Dtype>::Blob(const vector<int>& shape)
 
 template <typename Dtype>
 const int* Blob<Dtype>::gpu_shape() const {
-  CHECK(shape_data_);
   return (const int*)shape_data_->gpu_data();
 }
 
 template <typename Dtype>
 const Dtype* Blob<Dtype>::cpu_data() const {
-  CHECK(data_);
   return (const Dtype*)data_->cpu_data();
 }
 
 template <typename Dtype>
 void Blob<Dtype>::set_cpu_data(Dtype* data) {
-  CHECK(data);
   // Make sure CPU and GPU sizes remain equal
   size_t size = count_ * sizeof(Dtype);
   if (data_->size() != size) {
@@ -100,13 +91,11 @@ void Blob<Dtype>::set_cpu_data(Dtype* data) {
 
 template <typename Dtype>
 const Dtype* Blob<Dtype>::gpu_data() const {
-  CHECK(data_);
   return (const Dtype*)data_->gpu_data();
 }
 
 template <typename Dtype>
 void Blob<Dtype>::set_gpu_data(Dtype* data) {
-  CHECK(data);
   // Make sure CPU and GPU sizes remain equal
   size_t size = count_ * sizeof(Dtype);
   if (data_->size() != size) {
@@ -118,49 +107,41 @@ void Blob<Dtype>::set_gpu_data(Dtype* data) {
 
 template <typename Dtype>
 const Dtype* Blob<Dtype>::cpu_diff() const {
-  CHECK(diff_);
   return (const Dtype*)diff_->cpu_data();
 }
 
 template <typename Dtype>
 const Dtype* Blob<Dtype>::gpu_diff() const {
-  CHECK(diff_);
   return (const Dtype*)diff_->gpu_data();
 }
 
 template <typename Dtype>
 Dtype* Blob<Dtype>::mutable_cpu_data() {
-  CHECK(data_);
   return static_cast<Dtype*>(data_->mutable_cpu_data());
 }
 
 template <typename Dtype>
 Dtype* Blob<Dtype>::mutable_gpu_data() {
-  CHECK(data_);
   return static_cast<Dtype*>(data_->mutable_gpu_data());
 }
 
 template <typename Dtype>
 Dtype* Blob<Dtype>::mutable_cpu_diff() {
-  CHECK(diff_);
   return static_cast<Dtype*>(diff_->mutable_cpu_data());
 }
 
 template <typename Dtype>
 Dtype* Blob<Dtype>::mutable_gpu_diff() {
-  CHECK(diff_);
   return static_cast<Dtype*>(diff_->mutable_gpu_data());
 }
 
 template <typename Dtype>
 void Blob<Dtype>::ShareData(const Blob& other) {
-  CHECK_EQ(count_, other.count());
   data_ = other.data();
 }
 
 template <typename Dtype>
 void Blob<Dtype>::ShareDiff(const Blob& other) {
-  CHECK_EQ(count_, other.count());
   diff_ = other.diff();
 }
 
@@ -478,29 +459,25 @@ void Blob<Dtype>::FromProto(const BlobProto& proto, bool reshape) {
     }
     Reshape(shape);
   } else {
-    CHECK(ShapeEquals(proto)) << "shape mismatch (reshape not set)";
+    ShapeEquals(proto);
   }
   // copy data
   Dtype* data_vec = mutable_cpu_data();
   if (proto.double_data_size() > 0) {
-    CHECK_EQ(count_, proto.double_data_size());
     for (int i = 0; i < count_; ++i) {
       data_vec[i] = proto.double_data(i);
     }
   } else {
-    CHECK_EQ(count_, proto.data_size());
     for (int i = 0; i < count_; ++i) {
       data_vec[i] = proto.data(i);
     }
   }
   if (proto.double_diff_size() > 0) {
-    CHECK_EQ(count_, proto.double_diff_size());
     Dtype* diff_vec = mutable_cpu_diff();
     for (int i = 0; i < count_; ++i) {
       diff_vec[i] = proto.double_diff(i);
     }
   } else if (proto.diff_size() > 0) {
-    CHECK_EQ(count_, proto.diff_size());
     Dtype* diff_vec = mutable_cpu_diff();
     for (int i = 0; i < count_; ++i) {
       diff_vec[i] = proto.diff(i);

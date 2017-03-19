@@ -14,18 +14,8 @@ void ArgMaxLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   out_max_val_ = argmax_param.out_max_val();
   top_k_ = argmax_param.top_k();
   has_axis_ = argmax_param.has_axis();
-  CHECK_GE(top_k_, 1) << "top k must not be less than 1.";
   if (has_axis_) {
     axis_ = bottom[0]->CanonicalAxisIndex(argmax_param.axis());
-    CHECK_GE(axis_, 0) << "axis must not be less than 0.";
-    CHECK_LE(axis_, bottom[0]->num_axes()) <<
-      "axis must be less than or equal to the number of axis.";
-    CHECK_LE(top_k_, bottom[0]->shape(axis_))
-      << "top_k must be less than or equal to the dimension of the axis.";
-  } else {
-    CHECK_LE(top_k_, bottom[0]->count(1))
-      << "top_k must be less than or equal to"
-        " the dimension of the flattened bottom blob per instance.";
   }
 }
 

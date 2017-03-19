@@ -10,9 +10,7 @@ template <typename Dtype>
 void EmbedLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   N_ = this->layer_param_.embed_param().num_output();
-  CHECK_GT(N_, 0) << "EmbedLayer num_output must be positive.";
   K_ = this->layer_param_.embed_param().input_dim();
-  CHECK_GT(K_, 0) << "EmbedLayer input_dim must be positive.";
   bias_term_ = this->layer_param_.embed_param().bias_term();
   // Check if we need to set up the weights
   if (this->blobs_.size() > 0) {
@@ -70,9 +68,6 @@ void EmbedLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
   int index;
   for (int n = 0; n < M_; ++n) {
     index = static_cast<int>(bottom_data[n]);
-    DCHECK_GE(index, 0);
-    DCHECK_LT(index, K_);
-    DCHECK_EQ(static_cast<Dtype>(index), bottom_data[n]) << "non-integer input";
     caffe_copy(N_, weight + index * N_, top_data + n * N_);
   }
   if (bias_term_) {
@@ -85,7 +80,6 @@ void EmbedLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 template <typename Dtype>
 void EmbedLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
     const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
-  CHECK(!propagate_down[0]) << "Can't backpropagate to EmbedLayer input.";
   if (this->param_propagate_down_[0]) {
     const Dtype* top_diff = top[0]->cpu_diff();
     const Dtype* bottom_data = bottom[0]->cpu_data();
@@ -94,10 +88,6 @@ void EmbedLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
     int index;
     for (int n = 0; n < M_; ++n) {
       index = static_cast<int>(bottom_data[n]);
-      DCHECK_GE(index, 0);
-      DCHECK_LT(index, K_);
-      DCHECK_EQ(static_cast<Dtype>(index), bottom_data[n])
-          << "non-integer input";
       caffe_axpy(N_, Dtype(1), top_diff + n * N_, weight_diff + index * N_);
     }
   }

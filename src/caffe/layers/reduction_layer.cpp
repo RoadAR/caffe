@@ -25,7 +25,6 @@ void ReductionLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
   top[0]->Reshape(top_shape);
   num_ = bottom[0]->count(0, axis_);
   dim_ = bottom[0]->count(axis_);
-  CHECK_EQ(num_, top[0]->count());
   if (op_ == ReductionParameter_ReductionOp_SUM ||
       op_ == ReductionParameter_ReductionOp_MEAN) {
     vector<int> sum_mult_shape(1, dim_);

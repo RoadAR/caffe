@@ -1,7 +1,7 @@
 #ifndef CAFFE_TEST_GRADIENT_CHECK_UTIL_H_
 #define CAFFE_TEST_GRADIENT_CHECK_UTIL_H_
 
-#include <glog/logging.h>
+
 #include <gtest/gtest.h>
 
 #include <algorithm>
@@ -76,13 +76,7 @@ void GradientChecker<Dtype>::CheckGradientSingle(Layer<Dtype>* layer,
     const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top,
     int check_bottom, int top_id, int top_data_id, bool element_wise) {
   if (element_wise) {
-    CHECK_EQ(0, layer->blobs().size());
-    CHECK_LE(0, top_id);
-    CHECK_LE(0, top_data_id);
     const int top_count = top[top_id]->count();
-    for (int blob_id = 0; blob_id < bottom.size(); ++blob_id) {
-      CHECK_EQ(top_count, bottom[blob_id]->count());
-    }
   }
   // First, figure out what blobs we need to check against, and zero init
   // parameter blobs.
@@ -98,11 +92,9 @@ void GradientChecker<Dtype>::CheckGradientSingle(Layer<Dtype>* layer,
       blobs_to_check.push_back(bottom[i]);
     }
   } else if (check_bottom >= 0) {
-    CHECK_LT(check_bottom, bottom.size());
     blobs_to_check.push_back(bottom[check_bottom]);
     propagate_down[check_bottom] = true;
   }
-  CHECK_GT(blobs_to_check.size(), 0) << "No blobs to check.";
   // Compute the gradient analytically using Backward
   Caffe::set_random_seed(seed_);
   // Ignore the loss from the layer (it's just the weighted sum of the losses
@@ -183,7 +175,6 @@ void GradientChecker<Dtype>::CheckGradientExhaustive(Layer<Dtype>* layer,
     const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top,
     int check_bottom) {
   layer->SetUp(bottom, top);
-  CHECK_GT(top.size(), 0) << "Exhaustive mode requires at least one top blob.";
   for (int i = 0; i < top.size(); ++i) {
     for (int j = 0; j < top[i]->count(); ++j) {
       CheckGradientSingle(layer, bottom, top, check_bottom, i, j);
@@ -195,7 +186,6 @@ template <typename Dtype>
 void GradientChecker<Dtype>::CheckGradientEltwise(Layer<Dtype>* layer,
     const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
   layer->SetUp(bottom, top);
-  CHECK_GT(top.size(), 0) << "Eltwise mode requires at least one top blob.";
   const int check_bottom = -1;
   const bool element_wise = true;
   for (int i = 0; i < top.size(); ++i) {

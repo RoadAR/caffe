@@ -19,8 +19,6 @@ bool InternalThread::must_stop() {
 }
 
 void InternalThread::StartInternalThread() {
-  CHECK(!is_started()) << "Threads should persist and not be restarted.";
-
   int device = 0;
 #ifndef CPU_ONLY
   CUDA_CHECK(cudaGetDevice(&device));

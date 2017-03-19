@@ -8,9 +8,9 @@
 namespace caffe { namespace db {
 
 void LMDB::Open(const string& source, Mode mode) {
-  MDB_CHECK(mdb_env_create(&mdb_env_));
+  mdb_env_create(&mdb_env_);
   if (mode == NEW) {
-    CHECK_EQ(mkdir(source.c_str(), 0744), 0) << "mkdir " << source << " failed";
+    mkdir(source.c_str(), 0744);
   }
   int flags = 0;
   if (mode == READ) {
@@ -18,7 +18,6 @@ void LMDB::Open(const string& source, Mode mode) {
   }
   int rc = mdb_env_open(mdb_env_, source.c_str(), flags, 0664);
 #ifndef ALLOW_LMDB_NOLOCK
-  MDB_CHECK(rc);
 #else
   if (rc == EACCES) {
     // Close and re-open environment handle
@@ -37,9 +36,9 @@ void LMDB::Open(const string& source, Mode mode) {
 LMDBCursor* LMDB::NewCursor() {
   MDB_txn* mdb_txn;
   MDB_cursor* mdb_cursor;
-  MDB_CHECK(mdb_txn_begin(mdb_env_, NULL, MDB_RDONLY, &mdb_txn));
-  MDB_CHECK(mdb_dbi_open(mdb_txn, NULL, 0, &mdb_dbi_));
-  MDB_CHECK(mdb_cursor_open(mdb_txn, mdb_dbi_, &mdb_cursor));
+  mdb_txn_begin(mdb_env_, NULL, MDB_RDONLY, &mdb_txn);
+  mdb_dbi_open(mdb_txn, NULL, 0, &mdb_dbi_);
+  mdb_cursor_open(mdb_txn, mdb_dbi_, &mdb_cursor);
   return new LMDBCursor(mdb_txn, mdb_cursor);
 }
 
@@ -58,8 +57,8 @@ void LMDBTransaction::Commit() {
   MDB_txn *mdb_txn;
 
   // Initialize MDB variables
-  MDB_CHECK(mdb_txn_begin(mdb_env_, NULL, 0, &mdb_txn));
-  MDB_CHECK(mdb_dbi_open(mdb_txn, NULL, 0, &mdb_dbi));
+  mdb_txn_begin(mdb_env_, NULL, 0, &mdb_txn);
+  mdb_dbi_open(mdb_txn, NULL, 0, &mdb_dbi);
 
   for (int i = 0; i < keys.size(); i++) {
     mdb_key.mv_size = keys[i].size();
@@ -77,8 +76,6 @@ void LMDBTransaction::Commit() {
       Commit();
       return;
     }
-    // May have failed for some other reason
-    MDB_CHECK(put_rc);
   }
 
   // Commit the transaction
@@ -90,8 +87,6 @@ void LMDBTransaction::Commit() {
     Commit();
     return;
   }
-  // May have failed for some other reason
-  MDB_CHECK(commit_rc);
 
   // Cleanup after successful commit
   mdb_dbi_close(mdb_env_, mdb_dbi);
@@ -101,10 +96,9 @@ void LMDBTransaction::Commit() {
 
 void LMDBTransaction::DoubleMapSize() {
   struct MDB_envinfo current_info;
-  MDB_CHECK(mdb_env_info(mdb_env_, &current_info));
+  mdb_env_info(mdb_env_, &current_info);
   size_t new_size = current_info.me_mapsize * 2;
-  //DLOG(INFO) << "Doubling LMDB map size to " << (new_size>>20) << "MB ...";
-  MDB_CHECK(mdb_env_set_mapsize(mdb_env_, new_size));
+  mdb_env_set_mapsize(mdb_env_, new_size);
 }
 
 }  // namespace db

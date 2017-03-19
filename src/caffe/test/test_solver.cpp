@@ -23,7 +23,6 @@ class SolverTest : public MultiDeviceTest<TypeParam> {
  protected:
   virtual void InitSolverFromProtoString(const string& proto) {
     SolverParameter param;
-    CHECK(google::protobuf::TextFormat::ParseFromString(proto, &param));
     // Set the solver_mode according to current Caffe::mode.
     switch (Caffe::mode()) {
       case Caffe::CPU:

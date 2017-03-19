@@ -9,7 +9,6 @@ template <typename Dtype>
 void LRNLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   size_ = this->layer_param_.lrn_param().local_size();
-  CHECK_EQ(size_ % 2, 1) << "LRN only supports odd values for local_size";
   pre_pad_ = (size_ - 1) / 2;
   alpha_ = this->layer_param_.lrn_param().alpha();
   beta_ = this->layer_param_.lrn_param().beta();
@@ -68,8 +67,6 @@ void LRNLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 template <typename Dtype>
 void LRNLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
-  CHECK_EQ(4, bottom[0]->num_axes()) << "Input must have 4 axes, "
-      << "corresponding to (num, channels, height, width)";
   num_ = bottom[0]->num();
   channels_ = bottom[0]->channels();
   height_ = bottom[0]->height();

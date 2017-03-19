@@ -59,7 +59,7 @@ class DataLayerTest : public MultiDeviceTest<TypeParam> {
       stringstream ss;
       ss << i;
       string out;
-      CHECK(datum.SerializeToString(&out));
+      datum.SerializeToString(&out);
       txn->Put(ss.str(), out);
     }
     txn->Commit();
@@ -150,7 +150,7 @@ class DataLayerTest : public MultiDeviceTest<TypeParam> {
       stringstream ss;
       ss << i;
       string out;
-      CHECK(datum.SerializeToString(&out));
+      datum.SerializeToString(&out);
       txn->Put(ss.str(), out);
     }
     txn->Commit();

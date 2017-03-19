@@ -102,7 +102,6 @@ class RandomNumberGeneratorTest : public ::testing::Test {
   }
 
   void RngUniformFill(const Dtype lower, const Dtype upper, void* cpu_data) {
-    CHECK_GE(upper, lower);
     Dtype* rng_data = static_cast<Dtype*>(cpu_data);
     caffe_rng_uniform(sample_size_, lower, upper, rng_data);
   }
@@ -176,7 +175,6 @@ class RandomNumberGeneratorTest : public ::testing::Test {
   }
 
   void RngUniformFillGPU(const Dtype lower, const Dtype upper, void* gpu_data) {
-    CHECK_GE(upper, lower);
     Dtype* rng_data = static_cast<Dtype*>(gpu_data);
     caffe_gpu_rng_uniform(sample_size_, lower, upper, rng_data);
   }

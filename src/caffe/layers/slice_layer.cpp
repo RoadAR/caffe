@@ -10,8 +10,6 @@ template <typename Dtype>
 void SliceLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   const SliceParameter& slice_param = this->layer_param_.slice_param();
-  CHECK(!(slice_param.has_axis() && slice_param.has_slice_dim()))
-      << "Either axis or slice_dim should be specified; not both.";
   slice_point_.clear();
   std::copy(slice_param.slice_point().begin(),
       slice_param.slice_point().end(),
@@ -27,10 +25,6 @@ void SliceLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
     slice_axis_ = static_cast<int>(slice_param.slice_dim());
     // Don't allow negative indexing for slice_dim, a uint32 -- almost
     // certainly unintended.
-    CHECK_GE(slice_axis_, 0) << "casting slice_dim from uint32 to int32 "
-        << "produced negative result; slice_dim must satisfy "
-        << "0 <= slice_dim < " << kMaxBlobAxes;
-    CHECK_LT(slice_axis_, num_axes) << "slice_dim out of range.";
   } else {
     slice_axis_ = bottom[0]->CanonicalAxisIndex(slice_param.axis());
   }
@@ -40,12 +34,9 @@ void SliceLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
   slice_size_ = bottom[0]->count(slice_axis_ + 1);
   int count = 0;
   if (slice_point_.size() != 0) {
-    CHECK_EQ(slice_point_.size(), top.size() - 1);
-    CHECK_LE(top.size(), bottom_slice_axis);
     int prev = 0;
     vector<int> slices;
     for (int i = 0; i < slice_point_.size(); ++i) {
-      CHECK_GT(slice_point_[i], prev);
       slices.push_back(slice_point_[i] - prev);
       prev = slice_point_[i];
     }
@@ -56,16 +47,12 @@ void SliceLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
       count += top[i]->count();
     }
   } else {
-    CHECK_EQ(bottom_slice_axis % top.size(), 0)
-        << "Number of top blobs (" << top.size() << ") should evenly "
-        << "divide input slice axis (" << bottom_slice_axis << ")";
     top_shape[slice_axis_] = bottom_slice_axis / top.size();
     for (int i = 0; i < top.size(); ++i) {
       top[i]->Reshape(top_shape);
       count += top[i]->count();
     }
   }
-  CHECK_EQ(count, bottom[0]->count());
   if (top.size() == 1) {
     top[0]->ShareData(*bottom[0]);
     top[0]->ShareDiff(*bottom[0]);

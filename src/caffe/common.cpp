@@ -1,5 +1,5 @@
 #include <boost/thread.hpp>
-#include <glog/logging.h>
+
 #include <cmath>
 #include <cstdio>
 #include <ctime>
@@ -153,31 +153,7 @@ void Caffe::DeviceQuery() {
     printf("No cuda device present.\n");
     return;
   }
-  CUDA_CHECK(cudaGetDeviceProperties(&prop, device));
-  //LOG(INFO) << "Device id:                     " << device;
-  //LOG(INFO) << "Major revision number:         " << prop.major;
-  //LOG(INFO) << "Minor revision number:         " << prop.minor;
-  //LOG(INFO) << "Name:                          " << prop.name;
-  //LOG(INFO) << "Total global memory:           " << prop.totalGlobalMem;
-  //LOG(INFO) << "Total shared memory per block: " << prop.sharedMemPerBlock;
-  //LOG(INFO) << "Total registers per block:     " << prop.regsPerBlock;
-  //LOG(INFO) << "Warp size:                     " << prop.warpSize;
-  //LOG(INFO) << "Maximum memory pitch:          " << prop.memPitch;
-  //LOG(INFO) << "Maximum threads per block:     " << prop.maxThreadsPerBlock;
-  //LOG(INFO) << "Maximum dimension of block:    "
-  //    << prop.maxThreadsDim[0] << ", " << prop.maxThreadsDim[1] << ", "
-  //    << prop.maxThreadsDim[2];
-  //LOG(INFO) << "Maximum dimension of grid:     "
-  //    << prop.maxGridSize[0] << ", " << prop.maxGridSize[1] << ", "
-  //    << prop.maxGridSize[2];
-  //LOG(INFO) << "Clock rate:                    " << prop.clockRate;
-  //LOG(INFO) << "Total constant memory:         " << prop.totalConstMem;
-  //LOG(INFO) << "Texture alignment:             " << prop.textureAlignment;
-  //LOG(INFO) << "Concurrent copy and execution: "
-  //    << (prop.deviceOverlap ? "Yes" : "No");
-  //LOG(INFO) << "Number of multiprocessors:     " << prop.multiProcessorCount;
-  //LOG(INFO) << "Kernel execution timeout:      "
-  //    << (prop.kernelExecTimeoutEnabled ? "Yes" : "No");
+  cudaGetDeviceProperties(&prop, device);
   return;
 }
 

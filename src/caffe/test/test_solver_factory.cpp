@@ -25,8 +25,7 @@ class SolverFactoryTest : public MultiDeviceTest<TypeParam> {
         "  } "
         "} ";
     SolverParameter solver_param;
-    CHECK(google::protobuf::TextFormat::ParseFromString(
-        solver_proto, &solver_param));
+    google::protobuf::TextFormat::ParseFromString(solver_proto, &solver_param);
     return solver_param;
   }
 };

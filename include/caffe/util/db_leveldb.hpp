@@ -16,7 +16,6 @@ class LevelDBCursor : public Cursor {
   explicit LevelDBCursor(leveldb::Iterator* iter)
     : iter_(iter) {
     SeekToFirst();
-    CHECK(iter_->status().ok()) << iter_->status().ToString();
   }
   ~LevelDBCursor() { delete iter_; }
   virtual void SeekToFirst() { iter_->SeekToFirst(); }
@@ -31,14 +30,12 @@ class LevelDBCursor : public Cursor {
 
 class LevelDBTransaction : public Transaction {
  public:
-  explicit LevelDBTransaction(leveldb::DB* db) : db_(db) { CHECK_NOTNULL(db_); }
+  explicit LevelDBTransaction(leveldb::DB* db) : db_(db) {  }
   virtual void Put(const string& key, const string& value) {
     batch_.Put(key, value);
   }
   virtual void Commit() {
     leveldb::Status status = db_->Write(leveldb::WriteOptions(), &batch_);
-    CHECK(status.ok()) << "Failed to write batch to leveldb "
-                       << std::endl << status.ToString();
   }
 
  private:

@@ -16,13 +16,6 @@ void BiasLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
     const BiasParameter& param = this->layer_param_.bias_param();
     const int axis = bottom[0]->CanonicalAxisIndex(param.axis());
     const int num_axes = param.num_axes();
-    CHECK_GE(num_axes, -1) << "num_axes must be non-negative, "
-                           << "or -1 to extend to the end of bottom[0]";
-    if (num_axes >= 0) {
-      CHECK_GE(bottom[0]->num_axes(), axis + num_axes)
-          << "bias blob's shape extends past bottom[0]'s shape when applied "
-          << "starting with bottom[0] axis = " << axis;
-    }
     this->blobs_.resize(1);
     const vector<int>::const_iterator& shape_start =
         bottom[0]->shape().begin() + axis;
@@ -47,14 +40,6 @@ void BiasLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
   // with axis == 0 and (therefore) outer_dim_ == 1.
   const int axis = (bias->num_axes() == 0) ?
       0 : bottom[0]->CanonicalAxisIndex(param.axis());
-  CHECK_GE(bottom[0]->num_axes(), axis + bias->num_axes())
-      << "bias blob's shape extends past bottom[0]'s shape when applied "
-      << "starting with bottom[0] axis = " << axis;
-  for (int i = 0; i < bias->num_axes(); ++i) {
-    CHECK_EQ(bottom[0]->shape(axis + i), bias->shape(i))
-        << "dimension mismatch between bottom[0]->shape(" << axis + i
-        << ") and bias->shape(" << i << ")";
-  }
   outer_dim_ = bottom[0]->count(0, axis);
   bias_dim_ = bias->count();
   inner_dim_ = bottom[0]->count(axis + bias->num_axes());

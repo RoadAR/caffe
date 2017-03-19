@@ -7,8 +7,6 @@ classdef Blob < handle
   
   methods
     function self = Blob(hBlob_blob)
-      CHECK(is_valid_handle(hBlob_blob), 'invalid Blob handle');
-      
       % setup self handle
       self.hBlob_self = hBlob_blob;
     end
@@ -37,12 +35,9 @@ classdef Blob < handle
   
   methods (Access = private)
     function shape = check_and_preprocess_shape(~, shape)
-      CHECK(isempty(shape) || (isnumeric(shape) && isrow(shape)), ...
-        'shape must be a integer row vector');
       shape = double(shape);
     end
     function data = check_and_preprocess_data(self, data)
-      CHECK(isnumeric(data), 'data or diff must be numeric types');
       self.check_data_size_matches(data);
       if ~isa(data, 'single')
         data = single(data);
@@ -69,10 +64,6 @@ classdef Blob < handle
       is_matched = ...
         (length(self_shape_extended) == length(data_size_extended)) ...
         && all(self_shape_extended == data_size_extended);
-      CHECK(is_matched, ...
-        sprintf('%s, input data/diff size: [ %s] vs target blob shape: [ %s]', ...
-        'input data/diff size does not match target blob shape', ...
-        sprintf('%d ', data_size_extended), sprintf('%d ', self_shape_extended)));
     end
   end
 end

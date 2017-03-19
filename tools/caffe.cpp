@@ -4,7 +4,7 @@ namespace bp = boost::python;
 #endif
 
 #include <gflags/gflags.h>
-#include <glog/logging.h>
+
 
 #include <cstring>
 #include <map>
@@ -84,7 +84,7 @@ static void get_gpus(vector<int>* gpus) {
   if (FLAGS_gpu == "all") {
     int count = 0;
 #ifndef CPU_ONLY
-    CUDA_CHECK(cudaGetDeviceCount(&count));
+    cudaGetDeviceCount(&count);
 #else
 #endif
     for (int i = 0; i < count; ++i) {
@@ -96,8 +96,6 @@ static void get_gpus(vector<int>* gpus) {
     for (int i = 0; i < strings.size(); ++i) {
       gpus->push_back(boost::lexical_cast<int>(strings[i]));
     }
-  } else {
-    CHECK_EQ(gpus->size(), 0);
   }
 }
 
@@ -167,10 +165,6 @@ caffe::SolverAction::Enum GetRequestedAction(
 
 // Train / Finetune a model.
 int train() {
-  CHECK_GT(FLAGS_solver.size(), 0) << "Need a solver definition to train.";
-  CHECK(!FLAGS_snapshot.size() || !FLAGS_weights.size())
-      << "Give a snapshot to resume training or weights to finetune "
-      "but not both.";
   vector<string> stages = get_stages_from_flags();
 
   caffe::SolverParameter solver_param;
@@ -246,8 +240,6 @@ RegisterBrewFunction(train);
 
 // Test: score a model.
 int test() {
-  CHECK_GT(FLAGS_model.size(), 0) << "Need a model definition to score.";
-  CHECK_GT(FLAGS_weights.size(), 0) << "Need model weights to score.";
   vector<string> stages = get_stages_from_flags();
 
   // Set device id and mode
@@ -312,7 +304,6 @@ RegisterBrewFunction(test);
 
 // Time: benchmark the execution time of a model.
 int time() {
-  CHECK_GT(FLAGS_model.size(), 0) << "Need a model definition to time.";
   caffe::Phase phase = get_phase_from_flags(caffe::TRAIN);
   vector<string> stages = get_stages_from_flags();
 
@@ -378,8 +369,6 @@ int time() {
 RegisterBrewFunction(time);
 
 int main(int argc, char** argv) {
-  // Print output to stderr (while still logging).
-  FLAGS_alsologtostderr = 1;
   // Set version
   gflags::SetVersionString(AS_STRING(CAFFE_VERSION));
   // Usage message.

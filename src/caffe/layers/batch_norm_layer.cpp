@@ -41,9 +41,7 @@ void BatchNormLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       ParamSpec* fixed_param_spec = this->layer_param_.add_param();
       fixed_param_spec->set_lr_mult(0.f);
     } else {
-      CHECK_EQ(this->layer_param_.param(i).lr_mult(), 0.f)
-          << "Cannot configure batch normalization statistics as layer "
-          << "parameters.";
+      this->layer_param_.param(i).lr_mult();
     }
   }
 }
@@ -51,8 +49,6 @@ void BatchNormLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 template <typename Dtype>
 void BatchNormLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
-  if (bottom[0]->num_axes() >= 1)
-    CHECK_EQ(bottom[0]->shape(1), channels_);
   top[0]->ReshapeLike(*bottom[0]);
 
   vector<int> sz;

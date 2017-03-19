@@ -66,8 +66,6 @@ class LayerRegistry {
   // Adds a creator.
   static void AddCreator(const string& type, Creator creator) {
     CreatorRegistry& registry = Registry();
-    CHECK_EQ(registry.count(type), 0)
-        << "Layer type " << type << " already registered.";
     registry[type] = creator;
   }
 
@@ -75,8 +73,6 @@ class LayerRegistry {
   static shared_ptr<Layer<Dtype> > CreateLayer(const LayerParameter& param) {
     const string& type = param.type();
     CreatorRegistry& registry = Registry();
-    CHECK_EQ(registry.count(type), 1) << "Unknown layer type: " << type
-        << " (known types: " << LayerTypeListString() << ")";
     return registry[type](param);
   }
 

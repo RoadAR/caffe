@@ -6,7 +6,7 @@
 
 #include "boost/scoped_ptr.hpp"
 #include "gflags/gflags.h"
-#include "glog/logging.h"
+
 
 #include "caffe/proto/caffe.pb.h"
 #include "caffe/util/db.hpp"
@@ -72,15 +72,11 @@ int main(int argc, char** argv) {
     const std::string& data = datum.data();
     size_in_datum = std::max<int>(datum.data().size(),
         datum.float_data_size());
-    CHECK_EQ(size_in_datum, data_size) << "Incorrect data field size " <<
-        size_in_datum;
     if (data.size() != 0) {
-      CHECK_EQ(data.size(), size_in_datum);
       for (int i = 0; i < size_in_datum; ++i) {
         sum_blob.set_data(i, sum_blob.data(i) + (uint8_t)data[i]);
       }
     } else {
-      CHECK_EQ(datum.float_data_size(), size_in_datum);
       for (int i = 0; i < size_in_datum; ++i) {
         sum_blob.set_data(i, sum_blob.data(i) +
             static_cast<float>(datum.float_data(i)));

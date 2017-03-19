@@ -124,7 +124,6 @@ inline void im2col_nd_core_cpu(const Dtype* data_input, const bool im2col,
       incremented = false;
       for (int d_i = num_spatial_axes - 1; d_i >= 0; --d_i) {
         const int d_max = col_shape[d_i + 1];
-        DCHECK_LT(d_iter[d_i], d_max);
         if (d_iter[d_i] == d_max - 1) {
           d_iter[d_i] = 0;
         } else {  // d_iter[d_i] < d_max - 1

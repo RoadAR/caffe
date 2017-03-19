@@ -59,13 +59,8 @@ Classifier::Classifier(const string& model_file,
   net_.reset(new Net<float>(model_file, TEST));
   net_->CopyTrainedLayersFrom(trained_file);
 
-  CHECK_EQ(net_->num_inputs(), 1) << "Network should have exactly one input.";
-  CHECK_EQ(net_->num_outputs(), 1) << "Network should have exactly one output.";
-
   Blob<float>* input_layer = net_->input_blobs()[0];
   num_channels_ = input_layer->channels();
-  CHECK(num_channels_ == 3 || num_channels_ == 1)
-    << "Input layer should have 1 or 3 channels.";
   input_geometry_ = cv::Size(input_layer->width(), input_layer->height());
 
   /* Load the binaryproto mean file. */
@@ -73,14 +68,11 @@ Classifier::Classifier(const string& model_file,
 
   /* Load labels. */
   std::ifstream labels(label_file.c_str());
-  CHECK(labels) << "Unable to open labels file " << label_file;
   string line;
   while (std::getline(labels, line))
     labels_.push_back(string(line));
 
   Blob<float>* output_layer = net_->output_blobs()[0];
-  CHECK_EQ(labels_.size(), output_layer->channels())
-    << "Number of labels is different from the output layer dimension.";
 }
 
 static bool PairCompare(const std::pair<float, int>& lhs,
@@ -124,8 +116,6 @@ void Classifier::SetMean(const string& mean_file) {
   /* Convert from BlobProto to Blob<float> */
   Blob<float> mean_blob;
   mean_blob.FromProto(blob_proto);
-  CHECK_EQ(mean_blob.channels(), num_channels_)
-    << "Number of channels of mean file doesn't match input layer.";
 
   /* The format of the mean file is planar 32-bit float BGR or grayscale. */
   std::vector<cv::Mat> channels;
@@ -220,10 +210,6 @@ void Classifier::Preprocess(const cv::Mat& img,
    * input layer of the network because it is wrapped by the cv::Mat
    * objects in input_channels. */
   cv::split(sample_normalized, *input_channels);
-
-  CHECK(reinterpret_cast<float*>(input_channels->at(0).data)
-        == net_->input_blobs()[0]->cpu_data())
-    << "Input channels are not wrapping the input layer of the network.";
 }
 
 int main(int argc, char** argv) {
@@ -246,7 +232,6 @@ int main(int argc, char** argv) {
             << file << " ----------" << std::endl;
 
   cv::Mat img = cv::imread(file, -1);
-  CHECK(!img.empty()) << "Unable to decode image " << file;
   std::vector<Prediction> predictions = classifier.Classify(img);
 
   /* Print the top N predictions. */

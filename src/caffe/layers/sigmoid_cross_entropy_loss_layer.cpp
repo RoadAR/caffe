@@ -38,8 +38,6 @@ void SigmoidCrossEntropyLossLayer<Dtype>::Reshape(
   LossLayer<Dtype>::Reshape(bottom, top);
   outer_num_ = bottom[0]->shape(0);  // batch size
   inner_num_ = bottom[0]->count(1);  // instance size: |output| == |target|
-  CHECK_EQ(bottom[0]->count(), bottom[1]->count()) <<
-      "SIGMOID_CROSS_ENTROPY_LOSS layer inputs must have the same count.";
   sigmoid_layer_->Reshape(sigmoid_bottom_vec_, sigmoid_top_vec_);
 }
 
