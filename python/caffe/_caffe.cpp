@@ -330,9 +330,6 @@ BOOST_PYTHON_MODULE(_caffe) {
   bp::scope().attr("__version__") = AS_STRING(CAFFE_VERSION);
 
   // Caffe utility functions
-  bp::def("init_log", &InitLog);
-  bp::def("init_log", &InitLogInfo);
-  bp::def("log", &Log);
   bp::def("set_mode_cpu", &set_mode_cpu);
   bp::def("set_mode_gpu", &set_mode_gpu);
   bp::def("set_random_seed", &set_random_seed);
