@@ -29,11 +29,6 @@ if(USE_OPENMP)
   list(APPEND Caffe_COMPILE_OPTIONS PRIVATE ${OpenMP_CXX_FLAGS})
 endif()
 
-# ---[ Google-glog
-include("cmake/External/glog.cmake")
-list(APPEND Caffe_INCLUDE_DIRS PUBLIC ${GLOG_INCLUDE_DIRS})
-list(APPEND Caffe_LINKER_LIBS PUBLIC ${GLOG_LIBRARIES})
-
 # ---[ Google-gflags
 include("cmake/External/gflags.cmake")
 list(APPEND Caffe_INCLUDE_DIRS PUBLIC ${GFLAGS_INCLUDE_DIRS})
