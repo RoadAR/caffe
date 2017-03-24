@@ -76,8 +76,6 @@ void WindowDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
   }
 
   std::ifstream infile(this->layer_param_.window_data_param().source().c_str());
-  auto ff = infile.good();
-  auto lp1 = this->layer_param_.window_data_param().source();
 
   map<int, int> label_hist;
   label_hist.insert(std::make_pair(0, 0));
