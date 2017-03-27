@@ -260,7 +260,7 @@ template <> int Blob<int>::sumsq_data() const {
 
 template <typename Dtype>
 Dtype Blob<Dtype>::sumsq_data() const {
-  Dtype sumsq;
+  Dtype sumsq = 0;
   const Dtype* data;
   if (!data_) { return 0; }
   switch (data_->head()) {
@@ -270,16 +270,9 @@ Dtype Blob<Dtype>::sumsq_data() const {
     break;
   case SyncedMemory::HEAD_AT_GPU:
   case SyncedMemory::SYNCED:
-#ifndef CPU_ONLY
-    data = gpu_data();
-    caffe_gpu_dot(count_, data, data, &sumsq);
-#else
-#endif
     break;
   case SyncedMemory::UNINITIALIZED:
     return 0;
-  default:
-    ;;
   }
   return sumsq;
 }
@@ -296,7 +289,7 @@ template <> int Blob<int>::sumsq_diff() const {
 
 template <typename Dtype>
 Dtype Blob<Dtype>::sumsq_diff() const {
-  Dtype sumsq;
+  Dtype sumsq = 0;
   const Dtype* diff;
   if (!diff_) { return 0; }
   switch (diff_->head()) {

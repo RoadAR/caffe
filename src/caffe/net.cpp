@@ -398,13 +398,6 @@ void Net<Dtype>::AppendParam(const NetParameter& param, const int layer_id,
     // Named param blob with name we've seen before: share params
     const int owner_net_param_id = param_names_index_[param_name];
     param_owners_.push_back(owner_net_param_id);
-    const pair<int, int>& owner_index =
-        param_layer_indices_[owner_net_param_id];
-    const int owner_layer_id = owner_index.first;
-    const int owner_param_id = owner_index.second;
-    Blob<Dtype>* this_blob = layers_[layer_id]->blobs()[param_id].get();
-    Blob<Dtype>* owner_blob =
-        layers_[owner_layer_id]->blobs()[owner_param_id].get();
     const int param_size = layer_param.param_size();
     if (param_size > param_id && (layer_param.param(param_id).share_mode() ==
                                   ParamSpec_DimCheckMode_PERMISSIVE)) {
@@ -605,10 +598,7 @@ void Net<Dtype>::CopyTrainedLayersFromHDF5(const string trained_filename) {
     int target_layer_id = layer_names_index_[source_layer_name];
     vector<shared_ptr<Blob<Dtype> > >& target_blobs =
         layers_[target_layer_id]->blobs();
-    hid_t layer_hid = H5Gopen2(data_hid, source_layer_name.c_str(),
-        H5P_DEFAULT);
-    // Check that source layer doesn't have more params than target layer
-    int num_source_params = hdf5_get_num_links(layer_hid);
+    hid_t layer_hid = H5Gopen2(data_hid, source_layer_name.c_str(), H5P_DEFAULT);
     for (int j = 0; j < target_blobs.size(); ++j) {
       ostringstream oss;
       oss << j;

@@ -54,8 +54,6 @@ Dtype SGDSolver<Dtype>::GetLearningRate() {
     rate = this->param_.base_lr() * (Dtype(1.) /
         (Dtype(1.) + exp(-this->param_.gamma() * (Dtype(this->iter_) -
           Dtype(this->param_.stepsize())))));
-  } else {
-    ;;
   }
   return rate;
 }
@@ -309,7 +307,6 @@ void SGDSolver<Dtype>::RestoreSolverStateFromHDF5(const string& state_file) {
   }
   this->current_step_ = hdf5_load_int(file_hid, "current_step");
   hid_t history_hid = H5Gopen2(file_hid, "history", H5P_DEFAULT);
-  int state_history_size = hdf5_get_num_links(history_hid);
   for (int i = 0; i < history_.size(); ++i) {
     ostringstream oss;
     oss << i;

@@ -6,10 +6,7 @@
 namespace caffe {
 
 template <typename Dtype>
-void ConcatLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top) {
-  const ConcatParameter& concat_param = this->layer_param_.concat_param();
-}
+void ConcatLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) { }
 
 template <typename Dtype>
 void ConcatLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,

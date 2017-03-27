@@ -19,9 +19,6 @@ void HDF5OutputLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 
 template <typename Dtype>
 HDF5OutputLayer<Dtype>::~HDF5OutputLayer<Dtype>() {
-  if (file_opened_) {
-    herr_t status = H5Fclose(file_id_);
-  }
 }
 
 template <typename Dtype>

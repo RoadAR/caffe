@@ -15,12 +15,6 @@ namespace caffe {
 template <typename Dtype>
 void CropLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top) {
-  // LayerSetup() handles the number of dimensions; Reshape() handles the sizes.
-  // bottom[0] supplies the data
-  // bottom[1] supplies the size
-  const CropParameter& param = this->layer_param_.crop_param();
-  int input_dim = bottom[0]->num_axes();
-  const int start_axis = bottom[0]->CanonicalAxisIndex(param.axis());
 }
 
 template <typename Dtype>

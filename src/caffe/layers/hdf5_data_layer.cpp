@@ -39,10 +39,8 @@ void HDF5DataLayer<Dtype>::LoadHDF5FileData(const char* filename) {
         MIN_DATA_DIM, MAX_DATA_DIM, hdf_blobs_[i].get());
   }
 
-  herr_t status = H5Fclose(file_id);
+  H5Fclose(file_id);
 
-  // MinTopBlobs==1 guarantees at least one top blob
-  const int num = hdf_blobs_[0]->shape(0);
   // Default to identity permutation.
   data_permutation_.clear();
   data_permutation_.resize(hdf_blobs_[0]->shape(0));

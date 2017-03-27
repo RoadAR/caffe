@@ -71,8 +71,6 @@ Classifier::Classifier(const string& model_file,
   string line;
   while (std::getline(labels, line))
     labels_.push_back(string(line));
-
-  Blob<float>* output_layer = net_->output_blobs()[0];
 }
 
 static bool PairCompare(const std::pair<float, int>& lhs,

@@ -714,8 +714,6 @@ bool UpgradeV1LayerParameter(const V1LayerParameter& v1_layer_param,
       mode = ParamSpec_DimCheckMode_PERMISSIVE;
       break;
     default:
-      //LOG(FATAL) << "Unknown blob_share_mode: "
-      //           << v1_layer_param.blob_share_mode(i);
       break;
     }
     layer_param->mutable_param(i)->set_share_mode(mode);

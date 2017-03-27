@@ -20,7 +20,6 @@ inline Dtype tanh(Dtype x) {
 template <typename Dtype>
 void LSTMUnitLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top) {
-  const int num_instances = bottom[0]->shape(1);
   hidden_dim_ = bottom[0]->shape(2);
   top[0]->ReshapeLike(*bottom[0]);
   top[1]->ReshapeLike(*bottom[0]);

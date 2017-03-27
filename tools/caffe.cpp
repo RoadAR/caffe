@@ -150,8 +150,7 @@ void CopyLayers(caffe::Solver<float>* solver, const std::string& model_list) {
 
 // Translate the signal effect the user specified on the command-line to the
 // corresponding enumeration.
-caffe::SolverAction::Enum GetRequestedAction(
-    const std::string& flag_value) {
+caffe::SolverAction::Enum GetRequestedAction(const std::string& flag_value) {
   if (flag_value == "stop") {
     return caffe::SolverAction::STOP;
   }
@@ -161,6 +160,7 @@ caffe::SolverAction::Enum GetRequestedAction(
   if (flag_value == "none") {
     return caffe::SolverAction::NONE;
   }
+  return caffe::SolverAction::NONE;
 }
 
 // Train / Finetune a model.
@@ -278,15 +278,11 @@ int test() {
         } else {
           test_score[idx] += score;
         }
-        const std::string& output_name = caffe_net.blob_names()[
-            caffe_net.output_blob_indices()[j]];
       }
     }
   }
   loss /= FLAGS_iterations;
   for (int i = 0; i < test_score.size(); ++i) {
-    const std::string& output_name = caffe_net.blob_names()[
-        caffe_net.output_blob_indices()[test_score_output_id[i]]];
     const float loss_weight = caffe_net.blob_loss_weights()[
         caffe_net.output_blob_indices()[test_score_output_id[i]]];
     std::ostringstream loss_msg_stream;
@@ -359,9 +355,6 @@ int time() {
       backward_time_per_layer[i] += timer.MicroSeconds();
     }
     backward_time += backward_timer.MicroSeconds();
-  }
-  for (int i = 0; i < layers.size(); ++i) {
-    const caffe::string& layername = layers[i]->layer_param().name();
   }
   total_timer.Stop();
   return 0;
