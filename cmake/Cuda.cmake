@@ -187,7 +187,7 @@ function(detect_cuDNN)
   find_library(CUDNN_LIBRARY NAMES ${CUDNN_LIB_NAME}
    PATHS ${CUDNN_ROOT} $ENV{CUDNN_ROOT} ${CUDNN_INCLUDE} ${__libpath_hist} ${__libpath_hist}/../lib
    DOC "Path to cuDNN library.")
-  
+
   if(CUDNN_INCLUDE AND CUDNN_LIBRARY)
     set(HAVE_CUDNN  TRUE PARENT_SCOPE)
     set(CUDNN_FOUND TRUE PARENT_SCOPE)
@@ -267,7 +267,7 @@ if(Boost_VERSION EQUAL 105500)
   set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} \"-DBOOST_NOINLINE=__attribute__((noinline))\" ")
 endif()
 
-# disable some nvcc diagnostic that apears in boost, glog, glags, opencv, etc.
+# disable some nvcc diagnostic that apears in boost, glags, opencv, etc.
 foreach(diag cc_clobber_ignored integer_sign_change useless_using_declaration set_but_not_used)
   list(APPEND CUDA_NVCC_FLAGS -Xcudafe --diag_suppress=${diag})
 endforeach()

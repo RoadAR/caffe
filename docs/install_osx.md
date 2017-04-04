@@ -15,7 +15,7 @@ In other `ENV` settings, things may not work as expected.
 
 **General dependencies**
 
-    brew install -vd snappy leveldb gflags glog szip lmdb
+    brew install -vd snappy leveldb gflags szip lmdb
     # need the homebrew science source for OpenCV and hdf5
     brew tap homebrew/science
     brew install hdf5 opencv
@@ -59,7 +59,7 @@ Make sure that Homebrew doesn't install any software dependencies in the backgro
 
 The prerequisite Homebrew formulae are
 
-    boost snappy leveldb protobuf gflags glog szip lmdb homebrew/science/opencv
+    boost snappy leveldb protobuf gflags szip lmdb homebrew/science/opencv
 
 For each of these formulas, `brew edit FORMULA`, and add the ENV definitions as shown:
 
@@ -74,11 +74,11 @@ For each of these formulas, `brew edit FORMULA`, and add the ENV definitions as 
 
 To edit the formulae in turn, run
 
-    for x in snappy leveldb protobuf gflags glog szip boost boost-python lmdb homebrew/science/opencv; do brew edit $x; done
+    for x in snappy leveldb protobuf gflags szip boost boost-python lmdb homebrew/science/opencv; do brew edit $x; done
 
 After this, run
 
-    for x in snappy leveldb gflags glog szip lmdb homebrew/science/opencv; do brew uninstall $x; brew install --build-from-source -vd $x; done
+    for x in snappy leveldb gflags szip lmdb homebrew/science/opencv; do brew uninstall $x; brew install --build-from-source -vd $x; done
     brew uninstall protobuf; brew install --build-from-source --with-python -vd protobuf
     brew install --build-from-source -vd boost boost-python
 

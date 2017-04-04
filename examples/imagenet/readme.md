@@ -37,7 +37,7 @@ You may want to resize the images to 256x256 in advance. By default, we do not e
     done
 
 Take a look at `examples/imagenet/create_imagenet.sh`. Set the paths to the train and val dirs as needed, and set "RESIZE=true" to resize all images to 256x256 if you haven't resized the images in advance.
-Now simply create the leveldbs with `examples/imagenet/create_imagenet.sh`. Note that `examples/imagenet/ilsvrc12_train_leveldb` and `examples/imagenet/ilsvrc12_val_leveldb` should not exist before this execution. It will be created by the script. `GLOG_logtostderr=1` simply dumps more information for you to inspect, and you can safely ignore it.
+Now simply create the leveldbs with `examples/imagenet/create_imagenet.sh`. Note that `examples/imagenet/ilsvrc12_train_leveldb` and `examples/imagenet/ilsvrc12_val_leveldb` should not exist before this execution. It will be created by the script.
 
 Compute Image Mean
 ------------------

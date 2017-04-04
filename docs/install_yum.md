@@ -10,29 +10,7 @@ title: "Installation: RHEL / Fedora / CentOS"
 
 **Remaining dependencies, recent OS**
 
-    sudo yum install gflags-devel glog-devel lmdb-devel
-
-**Remaining dependencies, if not found**
-
-    # glog
-    wget https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/google-glog/glog-0.3.3.tar.gz
-    tar zxvf glog-0.3.3.tar.gz
-    cd glog-0.3.3
-    ./configure
-    make && make install
-    # gflags
-    wget https://github.com/schuhschuh/gflags/archive/master.zip
-    unzip master.zip
-    cd gflags-master
-    mkdir build && cd build
-    export CXXFLAGS="-fPIC" && cmake .. && make VERBOSE=1
-    make && make install
-    # lmdb
-    git clone https://github.com/LMDB/lmdb
-    cd lmdb/libraries/liblmdb
-    make && make install
-
-Note that glog does not compile with the most recent gflags version (2.1), so before that is resolved you will need to build with glog first.
+    sudo yum install gflags-devel lmdb-devel
 
 **CUDA**: Install via the NVIDIA package instead of `yum` to be certain of the library and driver versions.
 Install the library and latest driver separately; the driver bundled with the library is usually out-of-date.

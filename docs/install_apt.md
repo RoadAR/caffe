@@ -26,30 +26,6 @@ CUDA 8 is required on Ubuntu 16.04.
 
 Everything is packaged in 14.04.
 
-    sudo apt-get install libgflags-dev libgoogle-glog-dev liblmdb-dev
-
-**Remaining dependencies, 12.04**
-
-These dependencies need manual installation in 12.04.
-
-    # glog
-    wget https://github.com/google/glog/archive/v0.3.3.tar.gz
-    tar zxvf v0.3.3.tar.gz
-    cd glog-0.3.3
-    ./configure
-    make && make install
-    # gflags
-    wget https://github.com/schuhschuh/gflags/archive/master.zip
-    unzip master.zip
-    cd gflags-master
-    mkdir build && cd build
-    export CXXFLAGS="-fPIC" && cmake .. && make VERBOSE=1
-    make && make install
-    # lmdb
-    git clone https://github.com/LMDB/lmdb
-    cd lmdb/libraries/liblmdb
-    make && make install
-
-Note that glog does not compile with the most recent gflags version (2.1), so before that is resolved you will need to build with glog first.
+    sudo apt-get install libgflags-dev liblmdb-dev
 
 Continue with [compilation](installation.html#compilation).

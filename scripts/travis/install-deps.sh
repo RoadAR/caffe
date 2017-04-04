@@ -13,7 +13,6 @@ apt-get install -y --no-install-recommends \
   libboost-system-dev \
   libboost-thread-dev \
   libgflags-dev \
-  libgoogle-glog-dev \
   libhdf5-serial-dev \
   libopenblas-dev \
   python-virtualenv \
